@@ -1,0 +1,240 @@
+.overview-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.overview-title-group {
+  max-width: 720px;
+}
+
+.overview-tag {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.overview-header h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 1.8rem + 1vw, 3rem);
+  line-height: 1.05;
+}
+
+.overview-header p {
+  margin: 16px 0 0;
+  max-width: 680px;
+  color: var(--muted);
+  font-size: 0.98rem;
+}
+
+.overview-action {
+  border-radius: 999px;
+  background: var(--accent);
+  color: white;
+  padding: 14px 22px;
+  font-weight: 700;
+  box-shadow: 0 16px 30px rgba(199, 125, 50, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.overview-action:hover {
+  transform: translateY(-1px);
+}
+
+.overview-stats-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid rgba(36, 48, 40, 0.08);
+  border-radius: 24px;
+  padding: 24px;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+}
+
+.stat-card .stat-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 18px;
+}
+
+.stat-card .stat-value {
+  font-size: 2.7rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.stat-card .stat-description {
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.overview-bottom-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1.4fr 0.9fr;
+}
+
+.panel {
+  background: var(--surface);
+  border-radius: 28px;
+  padding: 26px;
+  box-shadow: var(--shadow);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.panel-header .view-all {
+  color: var(--accent-strong);
+  font-weight: 700;
+  background: rgba(199, 125, 50, 0.08);
+  border-radius: 999px;
+  padding: 10px 16px;
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.schedule-item {
+  border-radius: 18px;
+  padding: 18px 20px;
+  background: #fbf6ed;
+  border: 1px solid rgba(36, 48, 40, 0.06);
+}
+
+.schedule-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.schedule-name {
+  font-weight: 700;
+  margin: 0;
+}
+
+.schedule-date {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.schedule-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.schedule-count {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.schedule-status {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.schedule-status.active {
+  background: #d9f1dd;
+  color: #266439;
+}
+
+.schedule-status.booked {
+  background: #f5e4d2;
+  color: #8d5524;
+}
+
+.status-row {
+  display: grid;
+  gap: 18px;
+}
+
+.status-item {
+  display: grid;
+  gap: 10px;
+}
+
+.status-item span {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.status-track {
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: #efe6d8;
+  overflow: hidden;
+}
+
+.status-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8c9955 0%, #3f5f31 100%);
+}
+
+@media (max-width: 1080px) {
+  .overview-stats-grid,
+  .overview-bottom-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 800px) {
+  .overview-header,
+  .overview-bottom-grid,
+  .overview-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-header {
+    align-items: stretch;
+  }
+
+  .overview-action {
+    width: 100%;
+  }
+}

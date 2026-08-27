@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200..1000&display=swap');
+:root {
+  color-scheme: light;
+  --bg: #f2efe8;
+  --surface: #ffffff;
+  --surface-soft: #f8f5ef;
+  --text: #243028;
+  --muted: #5e6b63;
+  --accent: #c77d32;
+  --accent-strong: #a86526;
+  --border: #ded6c8;
+  --shadow: 0 24px 60px rgba(15, 23, 18, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: 'Mulish', sans-serif;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  outline: none;
+}
+
+::selection {
+  background: rgba(199, 125, 50, 0.18);
+}

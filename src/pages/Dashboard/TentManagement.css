@@ -1,0 +1,139 @@
+.tent-management {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.btn-add-user {
+  background: #22c55e;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.3s;
+}
+
+.btn-add-user:hover {
+  background: #16a34a;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.user-table th {
+  background-color: #21388A;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.user-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #334155;
+}
+
+.user-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.action-link {
+  color: #F79009;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: white;
+  width: 400px;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-form label {
+  display: block;
+  margin: 10px 0 4px;
+}
+
+.modal-form input,
+.modal-form select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-submit {
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.error-text {
+  color: red;
+  font-size: 14px;
+}
+

@@ -1,0 +1,121 @@
+.booking-page {
+  min-height: 100vh;
+  padding: 128px 24px 70px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.booking-hero,
+.booking-form,
+.booking-results {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.booking-hero {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.booking-kicker {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.booking-hero h1 {
+  max-width: 720px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(42px, 7vw, 74px);
+  font-weight: 500;
+  line-height: 1.02;
+}
+
+.booking-hero p:not(.booking-kicker) {
+  max-width: 700px;
+  color: #607066;
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.booking-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding: 28px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  border-radius: 28px;
+}
+
+.booking-field {
+  display: grid;
+  gap: 10px;
+}
+
+.booking-field span {
+  color: #314239;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.booking-field input,
+.booking-field select {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  color: #243028;
+  padding: 0 14px;
+  font: inherit;
+}
+
+.check-btn {
+  min-height: 56px;
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  padding: 0 22px;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  grid-column: 1 / -1;
+  border-radius: 16px;
+}
+
+.check-btn:hover {
+  background: var(--accent-strong);
+}
+
+.booking-results {
+  display: grid;
+  gap: 22px;
+}
+
+@media (max-width: 960px) {
+  .booking-form {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  .check-btn {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .booking-page {
+    padding: 106px 16px 48px;
+  }
+
+  .booking-form {
+    padding: 18px;
+  }
+}
