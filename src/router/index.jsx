@@ -7,7 +7,7 @@ import Overview from '../pages/Dashboard/Overview';
 import SiteMap from '../pages/Dashboard/SiteMap';
 import BookingManagement from '../pages/Dashboard/BookingManagement';
 import UserManagement from '../pages/Dashboard/UserManagement';
-import TransactionManagement from '../pages/Dashboard/TransactionManagement';
+import Revenue from '../pages/Dashboard/Revenue';
 
 export default function Router() {
   return useRoutes([
@@ -35,7 +35,7 @@ export default function Router() {
         { path: 'sitemap', element: <SiteMap /> },
         { path: 'booking', element: <BookingManagement /> },
         { path: 'customers', element: <UserManagement /> },
-        { path: 'revenue', element: <TransactionManagement /> },
+        { path: 'revenue', element: <Revenue /> },
       ],
     },
     {

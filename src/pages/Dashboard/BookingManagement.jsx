@@ -1,104 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './BookingManagement.css';
 
-const bookingData = [
-  {
-    id: 'BK001',
-    customerName: 'Bùi Anh Tuấn',
-    phone: '0911 234 567',
-    site: 'R1',
-    area: 'Rừng thông',
-    checkIn: '23/08/2026',
-    checkOut: '25/08/2026',
-    guests: 2,
-    status: 'booked',
-  },
-
-  {
-    id: 'BK002',
-    customerName: 'Vũ Đức Nam',
-    phone: '0966 777 333',
-    site: 'H5',
-    area: 'Ven hồ',
-    checkIn: '21/08/2026',
-    checkOut: '23/08/2026',
-    guests: 4,
-    status: 'booked',
-  },
-
-  {
-    id: 'BK003',
-    customerName: 'Lê Hoàng Long',
-    phone: '0905 111 222',
-    site: 'R2',
-    area: 'Rừng thông',
-    checkIn: '19/08/2026',
-    checkOut: '22/08/2026',
-    guests: 2,
-    status: 'booked',
-  },
-
-  {
-    id: 'BK004',
-    customerName: 'Phạm Minh Khuê',
-    phone: '0977 888 999',
-    site: 'D3',
-    area: 'Đồi cao',
-    checkIn: '19/08/2026',
-    checkOut: '21/08/2026',
-    guests: 7,
-    status: 'booked',
-  },
-
-  {
-    id: 'BK005',
-    customerName: 'Nguyễn Văn An',
-    phone: '0912 345 678',
-    site: 'H1',
-    area: 'Ven hồ',
-    checkIn: '18/08/2026',
-    checkOut: '20/08/2026',
-    guests: 3,
-    status: 'checked-in',
-  },
-
-  {
-    id: 'BK006',
-    customerName: 'Trần Thị Bích',
-    phone: '0987 654 321',
-    site: 'H3',
-    area: 'Ven hồ',
-    checkIn: '17/08/2026',
-    checkOut: '21/08/2026',
-    guests: 5,
-    status: 'checked-in',
-  },
-
-  {
-    id: 'BK007',
-    customerName: 'Đỗ Thu Hà',
-    phone: '0933 222 111',
-    site: 'R4',
-    area: 'Rừng thông',
-    checkIn: '14/08/2026',
-    checkOut: '17/08/2026',
-    guests: 4,
-    status: 'checked-out',
-  },
-
-  {
-    id: 'BK008',
-    customerName: 'Ngô Thị Lan',
-    phone: '0988 456 123',
-    site: 'D1',
-    area: 'Đồi cao',
-    checkIn: '11/08/2026',
-    checkOut: '13/08/2026',
-    guests: 5,
-    status: 'checked-out',
-  },
-];  
-
 export default function BookingManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -130,6 +32,11 @@ useEffect(() => {
     'bookings',
     JSON.stringify(bookings)
   );
+
+  // Thông báo cho các page khác rằng bookings đã thay đổi
+  window.dispatchEvent(
+    new Event('bookingsUpdated')
+  );
 }, [bookings]);
 
 useEffect(() => {
@@ -156,6 +63,36 @@ useEffect(() => {
     );
   };
 }, []);
+
+  const parseDate = (dateString) => {
+  if (!dateString) {
+    return null;
+  }
+
+  // Format: YYYY-MM-DD
+  if (dateString.includes('-')) {
+    const [year, month, day] = dateString.split('-');
+
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day)
+    );
+  }
+
+  // Format: DD/MM/YYYY
+  if (dateString.includes('/')) {
+    const [day, month, year] = dateString.split('/');
+
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day)
+    );
+  }
+
+  return null;
+};
 
     const handleCreateBooking = () => {
   if (!newBooking.customerName.trim()) {
@@ -205,15 +142,37 @@ if (currentSiteStatus === 'maintenance') {
   return;
 }
 
-const siteAlreadyBooked = bookings.some(
-  (booking) =>
-    booking.site === selectedSite &&
-    booking.status !== 'checked-out' &&
-    booking.status !== 'cancelled'
-);
+const siteAlreadyBooked = bookings.some((booking) => {
+  // Chỉ kiểm tra booking của cùng site
+  if (booking.site !== selectedSite) {
+    return false;
+  }
+
+  // Booking đã trả hoặc đã hủy thì không còn chiếm site
+  if (
+    booking.status === 'checked-out' ||
+    booking.status === 'cancelled'
+  ) {
+    return false;
+  }
+
+  // Kiểm tra khoảng ngày có bị trùng hay không
+  const existingCheckIn = parseDate(booking.checkIn);
+const existingCheckOut = parseDate(booking.checkOut);
+
+const newCheckIn = parseDate(newBooking.checkIn);
+const newCheckOut = parseDate(newBooking.checkOut);
+
+  return (
+    newCheckIn < existingCheckOut &&
+    newCheckOut > existingCheckIn
+  );
+});
 
 if (siteAlreadyBooked) {
-  alert(`${selectedSite} hiện đang có booking.`);
+  alert(
+    `${selectedSite} đã có booking trong khoảng thời gian này.`
+  );
   return;
 }
 
