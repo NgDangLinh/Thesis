@@ -1,11 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './SiteMap.css';
 import { siteData } from '../../data/siteData';
 
 
 export default function SiteMap() {
   const [selectedSite, setSelectedSite] = useState(null);
-  const [sitesData, setSitesData] = useState(siteData);
+  const [sitesData, setSitesData] = useState(() => {
+  const savedSiteStatuses = localStorage.getItem('siteStatuses');
+
+  if (!savedSiteStatuses) {
+    return siteData;
+  }
+
+  const savedStatuses = JSON.parse(savedSiteStatuses);
+
+  const restoredData = {};
+
+  Object.keys(siteData).forEach((category) => {
+    restoredData[category] = siteData[category].map((site) => ({
+      ...site,
+      status: savedStatuses[site.id] || 'available',
+    }));
+  });
+
+  return restoredData;
+});
+  const [bookings, setBookings] = useState([]);
 
   const handleStatusChange = (siteId, newStatus) => {
   setSitesData((currentData) => {
@@ -19,6 +39,22 @@ export default function SiteMap() {
       );
     });
 
+    // Lưu trạng thái của tất cả site
+    const updatedStatuses = {};
+
+    Object.values(updatedData).forEach((sites) => {
+      sites.forEach((site) => {
+        updatedStatuses[site.id] = site.status || 'available';
+      });
+    });
+
+    localStorage.setItem(
+      'siteStatuses',
+      JSON.stringify(updatedStatuses)
+    );
+
+    window.dispatchEvent(new Event('siteStatusesUpdated'));
+
     return updatedData;
   });
 
@@ -28,6 +64,43 @@ export default function SiteMap() {
       : currentSite
   );
 };
+
+useEffect(() => {
+  const savedBookings = localStorage.getItem('bookings');
+
+  if (savedBookings) {
+    setBookings(JSON.parse(savedBookings));
+  }
+}, []);
+
+const getSiteStatus = (site) => {
+  // 1. Bảo trì có ưu tiên cao nhất
+  if (site.status === 'maintenance') {
+    return 'maintenance';
+  }
+
+  // 2. Nếu không bảo trì thì mới kiểm tra booking
+  const booking = bookings.find(
+    (item) =>
+      item.site === site.id &&
+      item.status !== 'checked-out' &&
+      item.status !== 'cancelled'
+  );
+
+  // 3. Không có booking → Trống
+  if (!booking) {
+    return 'available';
+  }
+
+  // 4. Có khách đang ở
+  if (booking.status === 'checked-in') {
+    return 'staying';
+  }
+
+  // 5. Có booking nhưng chưa check-in
+  return 'occupied';
+};
+
 
   return (
   <div className="site-map-page">
@@ -73,10 +146,15 @@ export default function SiteMap() {
       <div className="site-grid">
         {sites.map((site) => (
           <div
-            className={`site-card site-card--${site.status}`}
-            key={site.id}
-            onClick={() => setSelectedSite(site)}
-          >
+  className={`site-card site-card--${getSiteStatus(site)}`}
+  key={site.id}
+  onClick={() =>
+    setSelectedSite({
+      ...site,
+      status: getSiteStatus(site),
+    })
+  }
+>
             <div className="site-card-icon">△</div>
 
             <strong className="site-card-id">

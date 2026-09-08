@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './BookingManagement.css';
 
 const bookingData = [
@@ -102,7 +102,15 @@ const bookingData = [
 export default function BookingManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [bookings, setBookings] = useState(bookingData);
+  const [bookings, setBookings] = useState(() => {
+  const savedBookings = localStorage.getItem('bookings');
+
+  return savedBookings
+    ? JSON.parse(savedBookings)
+    : bookingData;
+});
+
+
   const [editingBooking, setEditingBooking] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newBooking, setNewBooking] = useState({
@@ -114,6 +122,40 @@ export default function BookingManagement() {
   checkOut: '',
   guests: 1,
 });
+
+const [siteStatuses, setSiteStatuses] = useState({});
+
+useEffect(() => {
+  localStorage.setItem(
+    'bookings',
+    JSON.stringify(bookings)
+  );
+}, [bookings]);
+
+useEffect(() => {
+  const loadSiteStatuses = () => {
+    const savedSiteStatuses = localStorage.getItem('siteStatuses');
+
+    if (savedSiteStatuses) {
+      setSiteStatuses(JSON.parse(savedSiteStatuses));
+    } else {
+      setSiteStatuses({});
+    }
+  };
+
+  // Load lần đầu
+  loadSiteStatuses();
+
+  // Lắng nghe thay đổi từ Site Map
+  window.addEventListener('siteStatusesUpdated', loadSiteStatuses);
+
+  return () => {
+    window.removeEventListener(
+      'siteStatusesUpdated',
+      loadSiteStatuses
+    );
+  };
+}, []);
 
     const handleCreateBooking = () => {
   if (!newBooking.customerName.trim()) {
@@ -148,17 +190,32 @@ export default function BookingManagement() {
 
   const selectedSite = newBooking.site;
 
-  const siteAlreadyBooked = bookings.some(
-    (booking) =>
-      booking.site === selectedSite &&
-      booking.status !== 'checked-out' &&
-      booking.status !== 'cancelled'
-  );
+// Đọc trạng thái site mới nhất từ localStorage
+const savedSiteStatuses = localStorage.getItem('siteStatuses');
 
-  if (siteAlreadyBooked) {
-    alert(`${selectedSite} hiện đang có booking.`);
-    return;
-  }
+const currentSiteStatuses = savedSiteStatuses
+  ? JSON.parse(savedSiteStatuses)
+  : {};
+
+const currentSiteStatus = currentSiteStatuses[selectedSite];
+
+// Kiểm tra site có đang bảo trì hay không
+if (currentSiteStatus === 'maintenance') {
+  alert(`${selectedSite} hiện đang bảo trì và không thể đặt.`);
+  return;
+}
+
+const siteAlreadyBooked = bookings.some(
+  (booking) =>
+    booking.site === selectedSite &&
+    booking.status !== 'checked-out' &&
+    booking.status !== 'cancelled'
+);
+
+if (siteAlreadyBooked) {
+  alert(`${selectedSite} hiện đang có booking.`);
+  return;
+}
 
   const newBookingItem = {
     id: `BK${String(bookings.length + 1).padStart(3, '0')}`,
@@ -762,34 +819,51 @@ const handleSaveBooking = () => {
 
               {newBooking.category === 'Camping' && (
                 <>
-                  <option value="C1">C1</option>
-                  <option value="C2">C2</option>
-                  <option value="C3">C3</option>
-                  <option value="C4">C4</option>
+                  {['C1', 'C2', 'C3', 'C4'].map((site) => (
+      siteStatuses[site] !== 'maintenance' && (
+        <option key={site} value={site}>
+          {site}
+        </option>
+      )
+    ))}
                 </>
               )}
 
               {newBooking.category === 'Glamping' && (
-                <>
-                  <option value="G1">G1</option>
-                  <option value="G2">G2</option>
-                  <option value="G3">G3</option>
-                </>
-              )}
+  <>
+    {['G1', 'G2', 'G3'].map((site) => (
+      siteStatuses[site] !== 'maintenance' && (
+        <option key={site} value={site}>
+          {site}
+        </option>
+      )
+    ))}
+  </>
+)}
 
               {newBooking.category === 'Lodge' && (
-                <>
-                  <option value="L1">L1</option>
-                  <option value="L2">L2</option>
-                </>
-              )}
+  <>
+    {['L1', 'L2'].map((site) => (
+      siteStatuses[site] !== 'maintenance' && (
+        <option key={site} value={site}>
+          {site}
+        </option>
+      )
+    ))}
+  </>
+)}
 
               {newBooking.category === 'RV' && (
-                <>
-                  <option value="RV1">RV1</option>
-                  <option value="RV2">RV2</option>
-                </>
-              )}
+  <>
+    {['RV1', 'RV2'].map((site) => (
+      siteStatuses[site] !== 'maintenance' && (
+        <option key={site} value={site}>
+          {site}
+        </option>
+      )
+    ))}
+  </>
+)}
 
             </select>
           </div>

@@ -107,6 +107,22 @@
   background: #315c48;
 }
 
+.site-card--staying {
+  border-color: #6b8fb3;
+  background: #dceaf5;
+}
+
+.site-card--staying .site-card-icon,
+.site-card--staying .site-card-id {
+  color: #3f6f98;
+}
+
+.site-card--staying .site-card-type,
+.site-card--staying .site-card-area {
+  color: #55738e;
+}
+
+
 .site-card--checked-in {
   border-color: #5c7f92;
   background: #dcebf1;
@@ -324,6 +340,10 @@
 
 .site-detail-status-dot--occupied {
   background: #315c48;
+}
+
+.site-detail-status-dot--staying {
+  background: #6b8fb3;
 }
 
 .site-detail-status-dot--checked-in {
