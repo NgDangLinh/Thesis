@@ -1,144 +1,289 @@
-.user-management {
-  padding: 20px;
+/* =========================
+   CUSTOMERS PAGE
+========================= */
+
+.customers-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 28px 38px 40px;
+  box-sizing: border-box;
+  background: #f7f0df;
 }
 
-.header {
+
+/* =========================
+   HEADER
+========================= */
+
+.customers-header {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 26px;
 }
 
-.btn-add-user {
- background: #22c55e; 
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
+.customers-kicker {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: #718277;
+}
+
+.customers-header h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: #12251c;
+}
+
+.customers-description {
+  margin: 6px 0 0;
   font-size: 14px;
-  display: inline-flex;
+  color: #766f63;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.customers-search {
+  height: 38px;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  transition: background 0.3s;
-}
-
-.btn-add-user:hover {
-  background: #16a34a;
-}
-
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.user-table tr:hover {
-  background-color: #f9fafb;
-}
-
-.user-table th {
-  background-color: #21388A;
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  padding: 12px;
-  font-size: 14px;
-}
-
-.user-table td {
-  border-bottom: 1px solid #e2e8f0;
-  padding: 12px;
-  text-align: center;
-  font-size: 14px;
-  color: #334155;
-}
-
-.action-link {
-  color: #F79009;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.action-link:hover {
-  text-decoration: underline;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background: white;
-  width: 600px;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.modal-header {
-  padding: 16px;
-  background: #1e3a8a;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-}
-
-.modal-body {
-  padding: 16px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.error {
-  color: red;
-  margin-bottom: 10px;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 16px;
   gap: 10px;
+
+  padding: 0 13px;
+
+  margin-bottom: 16px;
+
+  background: #fffdf8;
+  border: 1px solid #dfd3b9;
+  border-radius: 7px;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.save-btn {
-  background: #0ea5e9;
-  color: white;
-  padding: 8px 16px;
+.customers-search:focus-within {
+  border-color: #557d67;
+  box-shadow:
+    0 0 0 3px rgba(85, 125, 103, 0.08);
+}
+
+.customers-search-icon {
+  flex-shrink: 0;
+
+  font-size: 21px;
+  line-height: 1;
+  color: #6f766f;
+
+  transform: rotate(-15deg);
+}
+
+.customers-search input {
+  width: 100%;
+
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  outline: none;
+
+  background: transparent;
+
+  font-family: inherit;
+  font-size: 14px;
+  color: #24352d;
 }
 
-.cancel-btn {
-  background: #ef4444;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.customers-search input::placeholder {
+  color: #8d8a83;
 }
 
-.close-btn {
-  cursor: pointer;
-  font-size: 20px;
+
+/* =========================
+   TABLE CARD
+========================= */
+
+.customers-table-card {
+  width: 100%;
+
+  overflow: hidden;
+
+  background: #fffdf8;
+
+  border: 1px solid #e2d6bd;
+  border-radius: 15px;
+
+  box-shadow:
+    0 2px 5px rgba(70, 55, 30, 0.06);
+}
+
+
+/* =========================
+   TABLE HEADER
+========================= */
+
+.customers-table-header,
+.customers-table-row {
+  display: grid;
+
+  grid-template-columns:
+    1.25fr
+    1.25fr
+    0.8fr
+    1fr;
+
+  align-items: center;
+
+  padding: 0 32px;
+}
+
+.customers-table-header {
+  min-height: 29px;
+
+  border-bottom: 1px solid #dfd3b9;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+
+  color: #5e655f;
+}
+
+
+/* =========================
+   TABLE ROW
+========================= */
+
+.customers-table-row {
+  min-height: 42px;
+
+  border-bottom: 1px solid #e2d6bd;
+
+  font-size: 14px;
+
+  color: #202a25;
+
+  transition:
+    background-color 0.15s ease;
+}
+
+.customers-table-row:last-child {
+  border-bottom: none;
+}
+
+.customers-table-row:hover {
+  background: #faf6ec;
+}
+
+
+/* =========================
+   CUSTOMER
+========================= */
+
+.customer-name {
+  font-weight: 600;
+  color: #18271f;
+}
+
+
+/* =========================
+   PHONE
+========================= */
+
+.customer-phone {
+  color: #334139;
+  letter-spacing: 0.2px;
+}
+
+
+/* =========================
+   LAST VISIT
+========================= */
+
+.customer-last-visit {
+  color: #334139;
+}
+
+
+/* =========================
+   TOTAL SPENDING
+========================= */
+
+.customer-total-spent {
+  font-weight: 500;
+  color: #17261e;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.customers-empty {
+  min-height: 190px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  text-align: center;
+
+  color: #746f65;
+}
+
+.customers-empty strong {
+  font-size: 14px;
+  color: #4d514d;
+}
+
+.customers-empty span {
+  font-size: 13px;
+  color: #8b867c;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .customers-page {
+    padding: 24px 22px 32px;
+  }
+
+  .customers-table-header,
+  .customers-table-row {
+    grid-template-columns:
+      1.2fr
+      1.2fr
+      0.8fr
+      1fr;
+
+    padding: 0 22px;
+  }
+}
+
+
+@media (max-width: 700px) {
+  .customers-page {
+    padding: 20px 16px 28px;
+  }
+
+  .customers-table-card {
+    overflow-x: auto;
+  }
+
+  .customers-table-header,
+  .customers-table-row {
+    min-width: 650px;
+  }
 }

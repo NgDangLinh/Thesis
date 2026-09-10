@@ -1,120 +1,420 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './UserManagement.css';
+import { siteData } from '../../data/siteData';
 
 export default function UserManagement() {
-  const [users, setUsers] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ username: '', name: '', email: '', phone: '', note: '' });
-  const [error, setError] = useState('');
+  const [bookings, setBookings] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const handleAddUser = () => {
-    if (!formData.username || !formData.name) {
-      setError('Please fill in all required fields');
-      return;
-    }
-    if (users.some(user => user.username === formData.username)) {
-      setError('Username already exists');
-      return;
-    }
+  // =========================
+  // LOAD BOOKINGS
+  // =========================
 
-    const newUser = {
-      id: users.length + 1,
-      ...formData,
-      status: 'Active',
-      joinDate: new Date().toLocaleString('en-US')
+  useEffect(() => {
+    const loadBookings = () => {
+      const savedBookings =
+        localStorage.getItem('bookings');
+
+      if (savedBookings) {
+        setBookings(JSON.parse(savedBookings));
+      } else {
+        setBookings([]);
+      }
     };
 
-    setUsers([...users, newUser]);
-    setShowModal(false);
-    setFormData({ username: '', name: '', email: '', phone: '', note: '' });
-    setError('');
+    loadBookings();
+
+    window.addEventListener(
+      'bookingsUpdated',
+      loadBookings
+    );
+
+    return () => {
+      window.removeEventListener(
+        'bookingsUpdated',
+        loadBookings
+      );
+    };
+  }, []);
+
+  // =========================
+  // FIND SITE
+  // =========================
+
+  const getSiteInfo = (siteId) => {
+    for (const category of Object.keys(siteData)) {
+      const site = siteData[category].find(
+        (item) => item.id === siteId
+      );
+
+      if (site) {
+        return {
+          ...site,
+          category,
+        };
+      }
+    }
+
+    return null;
+  };
+
+  // =========================
+  // PARSE DATE
+  // =========================
+
+  const parseDate = (dateString) => {
+    if (!dateString) {
+      return null;
+    }
+
+    // YYYY-MM-DD
+    if (dateString.includes('-')) {
+      const [year, month, day] =
+        dateString.split('-');
+
+      return new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+      );
+    }
+
+    // DD/MM/YYYY
+    if (dateString.includes('/')) {
+      const [day, month, year] =
+        dateString.split('/');
+
+      return new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+      );
+    }
+
+    return null;
+  };
+
+  // =========================
+  // CALCULATE NIGHTS
+  // =========================
+
+  const getNights = (checkIn, checkOut) => {
+    const startDate = parseDate(checkIn);
+    const endDate = parseDate(checkOut);
+
+    if (!startDate || !endDate) {
+      return 0;
+    }
+
+    const millisecondsPerDay =
+      1000 * 60 * 60 * 24;
+
+    return Math.max(
+      0,
+      Math.ceil(
+        (endDate - startDate) /
+          millisecondsPerDay
+      )
+    );
+  };
+
+  // =========================
+  // GET BOOKING PRICE
+  // =========================
+
+  const getBookingPrice = (booking) => {
+    const siteInfo = getSiteInfo(booking.site);
+
+    if (siteInfo) {
+      return siteInfo.price;
+    }
+
+    // Fallback cho dữ liệu booking cũ
+    const categoryPrices = {
+      Camping: 290000,
+      Glamping: 790000,
+      Lodge: 1190000,
+      RV: 950000,
+    };
+
+    return categoryPrices[booking.area] || 0;
+  };
+
+  // =========================
+  // FORMAT CURRENCY
+  // =========================
+
+  const formatCurrency = (amount) => {
+    return `${amount.toLocaleString('vi-VN')}đ`;
+  };
+
+  // =========================
+  // BUILD CUSTOMER LIST
+  // =========================
+
+  const customers = useMemo(() => {
+    const customerMap = {};
+
+    bookings.forEach((booking) => {
+      if (
+        !booking.customerName ||
+        !booking.phone
+      ) {
+        return;
+      }
+
+      const customerName =
+        booking.customerName.trim();
+
+      const phone =
+        booking.phone.trim();
+
+      const key =
+        `${customerName.toLowerCase()}_${phone}`;
+
+      if (!customerMap[key]) {
+        customerMap[key] = {
+          name: customerName,
+          phone,
+          latestVisit: null,
+          totalSpent: 0,
+        };
+      }
+
+      // =========================
+      // LATEST VISIT
+      // =========================
+
+      const checkIn = parseDate(
+        booking.checkIn
+      );
+
+      if (
+        checkIn &&
+        (
+          !customerMap[key].latestVisit ||
+          checkIn >
+            customerMap[key].latestVisit
+        )
+      ) {
+        customerMap[key].latestVisit =
+          checkIn;
+      }
+
+      // =========================
+      // TOTAL SPENDING
+      // =========================
+
+      if (
+        booking.status === 'cancelled'
+      ) {
+        return;
+      }
+
+      const pricePerNight =
+        getBookingPrice(booking);
+
+      const nights = getNights(
+        booking.checkIn,
+        booking.checkOut
+      );
+
+      customerMap[key].totalSpent +=
+        pricePerNight * nights;
+    });
+
+    return Object.values(customerMap).sort(
+      (a, b) => {
+        if (
+          !a.latestVisit &&
+          !b.latestVisit
+        ) {
+          return 0;
+        }
+
+        if (!a.latestVisit) {
+          return 1;
+        }
+
+        if (!b.latestVisit) {
+          return -1;
+        }
+
+        return (
+          b.latestVisit -
+          a.latestVisit
+        );
+      }
+    );
+  }, [bookings]);
+
+  // =========================
+  // SEARCH
+  // =========================
+
+  const filteredCustomers = useMemo(() => {
+    const search =
+      searchTerm
+        .toLowerCase()
+        .trim();
+
+    if (!search) {
+      return customers;
+    }
+
+    return customers.filter(
+      (customer) =>
+        customer.name
+          .toLowerCase()
+          .includes(search) ||
+        customer.phone
+          .toLowerCase()
+          .includes(search)
+    );
+  }, [
+    customers,
+    searchTerm,
+  ]);
+
+  // =========================
+  // FORMAT DATE
+  // =========================
+
+  const formatDate = (date) => {
+    if (!date) {
+      return '--/--';
+    }
+
+    return `${String(
+      date.getDate()
+    ).padStart(2, '0')}/${String(
+      date.getMonth() + 1
+    ).padStart(2, '0')}`;
   };
 
   return (
-    <div className="user-management">
-      <div className="header">
-        <h2>User list</h2>
-        <button className="btn-add-user" onClick={() => setShowModal(true)}>
-            + Add user
-        </button>
+    <div className="customers-page">
+
+      {/* =========================
+          HEADER
+      ========================= */}
+
+      <div className="customers-header">
+        <div>
+          <p className="customers-kicker">
+            SỐ KHÁCH
+          </p>
+
+          <h1>
+            Khách hàng
+          </h1>
+
+          <p className="customers-description">
+            Lịch sử lưu trú và chi tiêu của từng khách.
+          </p>
+        </div>
       </div>
 
-      <table className="user-table">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Login Name</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th>Note</th>
-            <th>Joined</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.length === 0 ? (
-            <tr>
-              <td colSpan="9" style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
-                No Data.
-              </td>
-            </tr>
-          ) : (
-            users.map((u, i) => (
-              <tr key={u.id}>
-                <td>{i + 1}</td>
-                <td>{u.username}</td>
-                <td>{u.name}</td>
-                <td>{u.email}</td>
-                <td>{u.phone}</td>
-                <td>{u.status}</td>
-                <td>{u.note}</td>
-                <td>{u.joinDate}</td>
-                <td><span className="action-link">Xem</span></td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      {/* =========================
+          SEARCH
+      ========================= */}
 
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3>Add new user</h3>
-              <span className="close-btn" onClick={() => setShowModal(false)}>×</span>
-            </div>
-            <div className="modal-body">
-              {error && <div className="error">{error}</div>}
-              <div className="form-group">
-                <label>Username (*)</label>
-                <input value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
-              </div>
-              <div className="form-group">
-                <label>Phone</label>
-                <input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
-              </div>
-              <div className="form-group">
-                <label>Full Name (*)</label>
-                <input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-              </div>
-              <div className="form-group">
-                <label>Email</label>
-                <input value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-              </div>
-              <div className="form-group">
-                <label>Note</label>
-                <textarea value={formData.note} onChange={(e) => setFormData({ ...formData, note: e.target.value })}></textarea>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="save-btn" onClick={handleAddUser}>Save</button>
-              <button className="cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
-            </div>
+      <div className="customers-search">
+        <span className="customers-search-icon">
+          ⌕
+        </span>
+
+        <input
+          type="text"
+          placeholder="Tìm khách..."
+          value={searchTerm}
+          onChange={(e) =>
+            setSearchTerm(e.target.value)
+          }
+        />
+      </div>
+
+      {/* =========================
+          CUSTOMER TABLE
+      ========================= */}
+
+      <div className="customers-table-card">
+
+        <div className="customers-table-header">
+
+          <div>
+            KHÁCH
           </div>
+
+          <div>
+            LIÊN HỆ
+          </div>
+
+          <div>
+            GHÉ GẦN NHẤT
+          </div>
+
+          <div>
+            TỔNG CHI TIÊU
+          </div>
+
         </div>
-      )}
+
+        {filteredCustomers.length > 0 ? (
+          filteredCustomers.map(
+            (customer, index) => (
+              <div
+                className="customers-table-row"
+                key={`${customer.phone}-${index}`}
+              >
+
+                {/* KHÁCH */}
+
+                <div className="customer-name">
+                  {customer.name}
+                </div>
+
+                {/* LIÊN HỆ */}
+
+                <div className="customer-phone">
+                  {customer.phone}
+                </div>
+
+                {/* GHÉ GẦN NHẤT */}
+
+                <div className="customer-last-visit">
+                  {formatDate(
+                    customer.latestVisit
+                  )}
+                </div>
+
+                {/* TỔNG CHI TIÊU */}
+
+                <div className="customer-total-spent">
+                  {formatCurrency(
+                    customer.totalSpent
+                  )}
+                </div>
+
+              </div>
+            )
+          )
+        ) : (
+          <div className="customers-empty">
+
+            <strong>
+              Không tìm thấy khách hàng
+            </strong>
+
+            <span>
+              Thử tìm bằng tên hoặc số điện thoại khác.
+            </span>
+
+          </div>
+        )}
+
+      </div>
+
     </div>
   );
 }

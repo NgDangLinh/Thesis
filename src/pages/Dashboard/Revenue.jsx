@@ -521,7 +521,7 @@ const getRevenueInPeriod = (
                         ? formatShortCurrency(
                             day.revenue
                           )
-                        : '-'}
+                        : '0đ'}
                     </span>
 
                     <div

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './BookingManagement.css';
+import { useLocation } from 'react-router-dom';
 
 export default function BookingManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [bookings, setBookings] = useState(() => {
   const savedBookings = localStorage.getItem('bookings');
+  const location = useLocation();
 
   return savedBookings
     ? JSON.parse(savedBookings)
@@ -15,6 +17,18 @@ export default function BookingManagement() {
 
   const [editingBooking, setEditingBooking] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  useEffect(() => {
+  if (location.state?.openCreateBooking) {
+    setIsCreateModalOpen(true);
+
+    window.history.replaceState(
+      {},
+      document.title
+    );
+  }
+}, [location.state]);
+
   const [newBooking, setNewBooking] = useState({
   customerName: '',
   phone: '',
