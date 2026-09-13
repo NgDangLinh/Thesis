@@ -600,7 +600,7 @@ export default function Overview() {
           type="button"
           className="overview-action"
           onClick={() =>
-            navigate('/admin/bookings', {
+            navigate('/admin/booking', {
               state: {
                 openCreateBooking: true,
     },
