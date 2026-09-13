@@ -5,9 +5,15 @@
 .customers-page {
   width: 100%;
   min-height: 100%;
-  padding: 28px 38px 40px;
+
+  padding: 32px 38px 60px;
+
   box-sizing: border-box;
-  background: #f7f0df;
+
+  background: var(--bg);
+  color: var(--text);
+
+  font-family: 'Mulish', sans-serif;
 }
 
 
@@ -19,30 +25,41 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 26px;
+
+  margin-bottom: 30px;
 }
 
 .customers-kicker {
-  margin: 0 0 4px;
+  margin: 0 0 6px;
+
+  color: var(--accent);
+
+  font-family: 'Mulish', sans-serif;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.4px;
-  color: #718277;
+  font-weight: 800;
+
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .customers-header h1 {
   margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 30px;
-  line-height: 1.15;
-  font-weight: 700;
-  color: #12251c;
+
+  color: var(--text);
+
+  font-family: 'Mulish', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.1;
 }
 
 .customers-description {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
+
+  color: var(--muted);
+
+  font-family: 'Mulish', sans-serif;
   font-size: 14px;
-  color: #766f63;
 }
 
 
@@ -51,18 +68,21 @@
 ========================= */
 
 .customers-search {
-  height: 38px;
+  height: 44px;
+
   display: flex;
   align-items: center;
+
   gap: 10px;
 
   padding: 0 13px;
 
-  margin-bottom: 16px;
+  margin-bottom: 22px;
 
-  background: #fffdf8;
-  border: 1px solid #dfd3b9;
-  border-radius: 7px;
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
 
   box-sizing: border-box;
 
@@ -72,9 +92,10 @@
 }
 
 .customers-search:focus-within {
-  border-color: #557d67;
+  border-color: var(--accent);
+
   box-shadow:
-    0 0 0 3px rgba(85, 125, 103, 0.08);
+    0 0 0 3px rgba(199, 125, 50, 0.1);
 }
 
 .customers-search-icon {
@@ -82,7 +103,8 @@
 
   font-size: 21px;
   line-height: 1;
-  color: #6f766f;
+
+  color: var(--muted);
 
   transform: rotate(-15deg);
 }
@@ -94,14 +116,14 @@
   outline: none;
 
   background: transparent;
+  color: var(--text);
 
-  font-family: inherit;
+  font-family: 'Mulish', sans-serif;
   font-size: 14px;
-  color: #24352d;
 }
 
 .customers-search input::placeholder {
-  color: #8d8a83;
+  color: #8d938e;
 }
 
 
@@ -114,18 +136,18 @@
 
   overflow: hidden;
 
-  background: #fffdf8;
+  background: var(--surface);
 
-  border: 1px solid #e2d6bd;
-  border-radius: 15px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
 
   box-shadow:
-    0 2px 5px rgba(70, 55, 30, 0.06);
+    0 8px 24px rgba(42, 48, 38, 0.08);
 }
 
 
 /* =========================
-   TABLE HEADER
+   TABLE
 ========================= */
 
 .customers-table-header,
@@ -140,34 +162,32 @@
 
   align-items: center;
 
-  padding: 0 32px;
+  padding: 0 24px;
+
+  font-family: 'Mulish', sans-serif;
 }
 
 .customers-table-header {
-  min-height: 29px;
+  min-height: 48px;
 
-  border-bottom: 1px solid #dfd3b9;
+  border-bottom: 1px solid var(--border);
+
+  color: var(--muted);
 
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.7px;
+  font-weight: 800;
 
-  color: #5e655f;
+  letter-spacing: 0.08em;
 }
 
-
-/* =========================
-   TABLE ROW
-========================= */
-
 .customers-table-row {
-  min-height: 42px;
+  min-height: 68px;
 
-  border-bottom: 1px solid #e2d6bd;
+  border-bottom: 1px solid var(--border);
+
+  color: var(--text);
 
   font-size: 14px;
-
-  color: #202a25;
 
   transition:
     background-color 0.15s ease;
@@ -178,7 +198,7 @@
 }
 
 .customers-table-row:hover {
-  background: #faf6ec;
+  background: var(--surface-soft);
 }
 
 
@@ -187,8 +207,10 @@
 ========================= */
 
 .customer-name {
-  font-weight: 600;
-  color: #18271f;
+  color: var(--text);
+
+  font-family: 'Mulish', sans-serif;
+  font-weight: 800;
 }
 
 
@@ -197,7 +219,10 @@
 ========================= */
 
 .customer-phone {
-  color: #334139;
+  color: var(--muted);
+
+  font-family: 'Mulish', sans-serif;
+
   letter-spacing: 0.2px;
 }
 
@@ -207,7 +232,9 @@
 ========================= */
 
 .customer-last-visit {
-  color: #334139;
+  color: var(--muted);
+
+  font-family: 'Mulish', sans-serif;
 }
 
 
@@ -216,8 +243,10 @@
 ========================= */
 
 .customer-total-spent {
-  font-weight: 500;
-  color: #17261e;
+  color: var(--text);
+
+  font-family: 'Mulish', sans-serif;
+  font-weight: 800;
 }
 
 
@@ -237,17 +266,20 @@
 
   text-align: center;
 
-  color: #746f65;
+  font-family: 'Mulish', sans-serif;
 }
 
 .customers-empty strong {
-  font-size: 14px;
-  color: #4d514d;
+  color: var(--text);
+
+  font-size: 15px;
+  font-weight: 800;
 }
 
 .customers-empty span {
+  color: var(--muted);
+
   font-size: 13px;
-  color: #8b867c;
 }
 
 
@@ -257,25 +289,18 @@
 
 @media (max-width: 900px) {
   .customers-page {
-    padding: 24px 22px 32px;
+    padding: 24px 22px 40px;
   }
 
   .customers-table-header,
   .customers-table-row {
-    grid-template-columns:
-      1.2fr
-      1.2fr
-      0.8fr
-      1fr;
-
-    padding: 0 22px;
+    padding: 0 20px;
   }
 }
 
-
 @media (max-width: 700px) {
   .customers-page {
-    padding: 20px 16px 28px;
+    padding: 20px 16px 32px;
   }
 
   .customers-table-card {

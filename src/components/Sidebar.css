@@ -1,79 +1,148 @@
 .admin-sidebar {
   width: 260px;
   min-height: 100vh;
-  background: #0d1b11;
-  color: #f3f7f2;
+
+  box-sizing: border-box;
+
+  background: #1b3025;
+  color: #ffffff;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   padding: 28px 20px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+
+  box-shadow: 8px 0 30px rgba(15, 23, 18, 0.08);
 }
+
+/* =========================
+   SIDEBAR TOP
+========================= */
+
+.sidebar-top {
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   BRAND
+========================= */
 
 .sidebar-brand {
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 16px;
+
   margin-bottom: 36px;
 }
 
-.brand-icon {
-  width: 44px;
-  height: 44px;
+.brand-logo {
+  width: 58px;
+  height: 58px;
+
+  flex-shrink: 0;
+
+  object-fit: contain;
+
   border-radius: 12px;
-  background: #3b5f40;
-  display: grid;
-  place-items: center;
-  font-size: 20px;
+
+  transform: scale(1.35);
+}
+
+.brand-text {
+  min-width: 0;
 }
 
 .brand-title {
+  color: #ffffff;
+
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
+
+  line-height: 1.2;
 }
 
 .brand-subtitle {
-  margin-top: 4px;
-  color: #9bb59d;
+  margin-top: 5px;
+
+  color: rgba(255, 255, 255, 0.62);
+
   font-size: 13px;
+  line-height: 1.35;
 }
+
+/* =========================
+   NAVIGATION
+========================= */
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  color: #d9e3d2;
+
+  padding: 13px 16px;
+
+  border-radius: 14px;
+
+  color: rgba(255, 255, 255, 0.72);
+
   text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  background: rgba(199, 125, 50, 0.10);
+
+  color: #ffffff;
+
+  transform: translateX(2px);
 }
 
 .nav-item.active {
-  background: #2e5b3d;
-  color: #fff;
+  background: #c77d32;
+
+  color: #ffffff;
+
+  font-weight: 800;
+
+  box-shadow:
+    0 8px 20px rgba(199, 125, 50, 0.18);
 }
 
 .nav-icon {
   width: 24px;
-  text-align: center;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 17px;
 }
+
+/* =========================
+   FOOTER
+========================= */
 
 .sidebar-footer {
   margin-top: 36px;
+
   padding-top: 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .user-info {
@@ -81,28 +150,78 @@
 }
 
 .user-name {
-  font-weight: 700;
+  color: #ffffff;
+
   font-size: 15px;
+  font-weight: 800;
 }
 
 .user-role {
   margin-top: 4px;
-  color: #9bb59d;
+
+  color: rgba(255, 255, 255, 0.58);
+
   font-size: 13px;
 }
 
+/* =========================
+   LOGOUT
+========================= */
+
 .logout-button {
   width: 100%;
-  border: 1px solid #3b5f40;
-  background: rgba(59, 95, 64, 0.15);
-  color: #f3f7f2;
+
+  min-height: 42px;
+
   padding: 10px 12px;
-  border-radius: 10px;
+
+  border: 1px solid rgba(199, 125, 50, 0.55);
+  border-radius: 12px;
+
+  background: transparent;
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .logout-button:hover {
-  background: #3b5f40;
-  border-color: #6ca372;
+  background: #c77d32;
+
+  border-color: #c77d32;
+
+  color: #ffffff;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .admin-sidebar {
+    width: 220px;
+
+    padding: 24px 16px;
+  }
+
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand-title {
+    font-size: 16px;
+  }
+
+  .nav-item {
+    padding: 12px 14px;
+  }
 }

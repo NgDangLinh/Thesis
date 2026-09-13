@@ -390,15 +390,15 @@ const getRevenueInPeriod = (
       <div className="revenue-header">
         <div>
           <p className="revenue-kicker">
-            SỔ QUỸ
+            REVENUE
           </p>
 
           <h1>
-            Doanh thu
+            Revenue
           </h1>
 
           <p className="revenue-description">
-            Doanh thu 7 ngày gần đây và theo từng loại hình.
+            Revenue from the last 7 days by accommodation type.
           </p>
         </div>
       </div>
@@ -414,7 +414,7 @@ const getRevenueInPeriod = (
 
         <div className="revenue-summary-card">
           <p>
-            7 NGÀY QUA
+            The past 7 days
           </p>
 
           <h2>
@@ -422,7 +422,7 @@ const getRevenueInPeriod = (
           </h2>
 
           <span>
-            tổng doanh thu ghi nhận
+            total recorded revenue
           </span>
         </div>
 
@@ -431,7 +431,7 @@ const getRevenueInPeriod = (
 
         <div className="revenue-summary-card">
           <p>
-            TRUNG BÌNH / NGÀY
+            AVERAGE / DAY
           </p>
 
           <h2>
@@ -439,7 +439,7 @@ const getRevenueInPeriod = (
           </h2>
 
           <span>
-            theo 7 ngày gần nhất
+            based on the last 7 days
           </span>
         </div>
 
@@ -448,13 +448,13 @@ const getRevenueInPeriod = (
 
         <div className="revenue-summary-card">
           <p>
-            LOẠI HÌNH DOANH THU CAO NHẤT
+            TOP REVENUE CATEGORY
           </p>
 
           <h2>
             {topCategory.revenue > 0
               ? topCategory.category
-              : 'Chưa có dữ liệu'}
+              : 'No data available'}
           </h2>
 
           <span>
@@ -462,7 +462,7 @@ const getRevenueInPeriod = (
               ? formatCurrency(
                   topCategory.revenue
                 )
-              : 'chưa có doanh thu'}
+              : 'No revenue recorded'}
           </span>
         </div>
 
@@ -482,7 +482,7 @@ const getRevenueInPeriod = (
         <div className="revenue-card revenue-daily-card">
 
           <h3>
-            Doanh thu theo ngày
+            Revenue by Day
           </h3>
 
           <div className="revenue-chart">
@@ -553,7 +553,7 @@ const getRevenueInPeriod = (
         <div className="revenue-card revenue-area-card">
 
           <h3>
-            Doanh thu theo loại hình
+            Revenue by Category
           </h3>
 
           <div className="revenue-area-list">

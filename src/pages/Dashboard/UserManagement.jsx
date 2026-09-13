@@ -302,15 +302,15 @@ export default function UserManagement() {
       <div className="customers-header">
         <div>
           <p className="customers-kicker">
-            SỐ KHÁCH
+            CUSTOMERS
           </p>
 
           <h1>
-            Khách hàng
+            Customer
           </h1>
 
           <p className="customers-description">
-            Lịch sử lưu trú và chi tiêu của từng khách.
+            View customer stay history and spending
           </p>
         </div>
       </div>
@@ -326,7 +326,7 @@ export default function UserManagement() {
 
         <input
           type="text"
-          placeholder="Tìm khách..."
+          placeholder="Search customers..."
           value={searchTerm}
           onChange={(e) =>
             setSearchTerm(e.target.value)
@@ -343,19 +343,19 @@ export default function UserManagement() {
         <div className="customers-table-header">
 
           <div>
-            KHÁCH
+            CUSTOMER
           </div>
 
           <div>
-            LIÊN HỆ
+            CONTACT
           </div>
 
           <div>
-            GHÉ GẦN NHẤT
+            LAST VISIT
           </div>
 
           <div>
-            TỔNG CHI TIÊU
+            TOTAL SPENDING
           </div>
 
         </div>
@@ -403,11 +403,11 @@ export default function UserManagement() {
           <div className="customers-empty">
 
             <strong>
-              Không tìm thấy khách hàng
+              No customers found
             </strong>
 
             <span>
-              Thử tìm bằng tên hoặc số điện thoại khác.
+              Try searching by a different name or phone number.
             </span>
 
           </div>

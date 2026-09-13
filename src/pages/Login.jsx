@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import heroImage from '../assets/HomePageCamping.jpg';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -9,6 +10,7 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
+
     if (username && password) {
       localStorage.setItem('token', 'fake_token');
       navigate('/admin');
@@ -18,38 +20,72 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          LOGIN
+    <div
+  className="login-page"
+  style={{ backgroundImage: `url(${heroImage})` }}
+>
+      <div className="login-overlay"></div>
+
+      <div className="login-content">
+        <div className="login-brand">
+          <p>MOJEN RETREAT</p>
+          <span>Forest retreat & campsite</span>
         </div>
-        <form className="login-form" onSubmit={handleLogin}>
-          <div style={{ marginBottom: '20px' }}>
-            <label>Username</label>
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+
+        <div className="login-card">
+          <div className="login-card-header">
+            <p className="login-kicker">ADMIN PORTAL</p>
+            <h1>Welcome back</h1>
+            <span>Sign in to manage your campsite.</span>
           </div>
-          <div style={{ marginBottom: '20px' }}>
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="remember">
-            <input type="checkbox" id="remember" defaultChecked />
-            <label htmlFor="remember">Remember me</label>
-          </div>
-          <button type="submit">
-            Log in
-          </button>
-        </form>
+
+          <form className="login-form" onSubmit={handleLogin}>
+            <div className="login-field">
+              <label htmlFor="username">Username</label>
+
+              <input
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+
+            <div className="login-field">
+              <label htmlFor="password">Password</label>
+
+              <input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            <div className="remember">
+              <input
+                type="checkbox"
+                id="remember"
+                defaultChecked
+              />
+
+              <label htmlFor="remember">
+                Remember me
+              </label>
+            </div>
+
+            <button type="submit" className="login-button">
+              Log in
+            </button>
+          </form>
+        </div>
+
+        <div className="login-footer">
+          <span>Mojen Camp</span>
+          <span>Quan Chu, Thai Nguyen</span>
+        </div>
       </div>
     </div>
   );

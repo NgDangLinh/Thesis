@@ -110,32 +110,32 @@ useEffect(() => {
 
     const handleCreateBooking = () => {
   if (!newBooking.customerName.trim()) {
-    alert('Vui lòng nhập tên khách hàng.');
+    alert('Please enter the customer name.');
     return;
   }
 
   if (!newBooking.phone.trim()) {
-    alert('Vui lòng nhập số điện thoại.');
+    alert('Please enter the phone number.');
     return;
   }
 
   if (!newBooking.site) {
-    alert('Vui lòng chọn site.');
+    alert('Please select a site.');
     return;
   }
 
   if (!newBooking.checkIn) {
-    alert('Vui lòng chọn ngày check-in.');
+    alert('Please select the check-in date.');
     return;
   }
 
   if (!newBooking.checkOut) {
-    alert('Vui lòng chọn ngày check-out.');
+    alert('Please select the check-out date.');
     return;
   }
 
   if (newBooking.checkOut <= newBooking.checkIn) {
-    alert('Ngày check-out phải sau ngày check-in.');
+    alert('The check-out date must be after the check-in date.');
     return;
   }
 
@@ -152,7 +152,7 @@ const currentSiteStatus = currentSiteStatuses[selectedSite];
 
 // Kiểm tra site có đang bảo trì hay không
 if (currentSiteStatus === 'maintenance') {
-  alert(`${selectedSite} hiện đang bảo trì và không thể đặt.`);
+  alert(`${selectedSite} is currently under maintenance and cannot be booked.`);
   return;
 }
 
@@ -185,7 +185,7 @@ const newCheckOut = parseDate(newBooking.checkOut);
 
 if (siteAlreadyBooked) {
   alert(
-    `${selectedSite} đã có booking trong khoảng thời gian này.`
+    `${selectedSite} is already booked for the selected period.`
   );
   return;
 }
@@ -252,7 +252,7 @@ const handleSaveBooking = () => {
   }
 
   const confirmed = window.confirm(
-    `Bạn có chắc muốn xóa đặt chỗ của ${booking.customerName}?`
+    `Are you sure you want to delete the booking for ${booking.customerName}?`
   );
 
   if (!confirmed) {
@@ -287,14 +287,14 @@ const handleSaveBooking = () => {
 
         <div className="booking-management-title">
           <p className="booking-management-kicker">
-            SỔ ĐẶT CHỖ
+            BOOKINGS
           </p>
 
-          <h1>Đặt chỗ</h1>
+        <h1>Bookings</h1>
 
-          <p className="booking-management-description">
-            Theo dõi mọi lượt đặt, nhận và trả trại.
-          </p>
+        <p className="booking-management-description">
+  Manage reservations, check-ins, and check-outs.
+</p>
         </div>
 
         <button
@@ -303,7 +303,7 @@ const handleSaveBooking = () => {
           onClick={() => setIsCreateModalOpen(true)}
         >
           <span>+</span>
-          Đặt chỗ mới
+          New Booking
         </button>
 
       </div>
@@ -320,7 +320,7 @@ const handleSaveBooking = () => {
 
           <input
             type="text"
-            placeholder="Tìm theo tên khách hoặc mã lô..."
+            placeholder="Search by customer or site..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -333,35 +333,35 @@ const handleSaveBooking = () => {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="all">
-            Tất cả trạng thái
-          </option>
+  All statuses
+</option>
 
-          <option value="booked">
-            Đã đặt
-          </option>
+<option value="booked">
+  Booked
+</option>
 
-          <option value="checked-in">
-            Đang ở
-          </option>
+<option value="checked-in">
+  Checked in
+</option>
 
-          <option value="checked-out">
-            Đã trả
-          </option>
+<option value="checked-out">
+  Checked out
+</option>
 
-          <option value="cancelled">
-            Đã hủy
-          </option>
+<option value="cancelled">
+  Cancelled
+</option>
         </select>
 
       </div>
       <div className="booking-table-card">
 
   <div className="booking-table-header">
-    <div>KHÁCH</div>
-    <div>LÔ</div>
-    <div>NGÀY</div>
-    <div>SỐ KHÁCH</div>
-    <div>TRẠNG THÁI</div>
+    <div>CUSTOMER</div>
+<div>SITE</div>
+<div>DATES</div>
+<div>GUESTS</div>
+<div>STATUS</div>
     <div></div>
   </div>
 
@@ -399,12 +399,12 @@ const handleSaveBooking = () => {
           <span className="booking-status-dot"></span>
 
           {booking.status === 'booked'
-            ? 'Đã đặt'
-            : booking.status === 'checked-in'
-            ? 'Đang ở'
-            : booking.status === 'checked-out'
-            ? 'Đã trả'
-            : 'Đã hủy'}
+  ? 'Booked'
+  : booking.status === 'checked-in'
+  ? 'Checked in'
+  : booking.status === 'checked-out'
+  ? 'Checked out'
+  : 'Cancelled'}
         </span>
       </div>
 
@@ -429,10 +429,10 @@ const handleSaveBooking = () => {
   ))
 ) : (
   <div className="booking-empty-state">
-    <strong>Không tìm thấy đặt chỗ</strong>
+    <strong>No bookings found</strong>
 
     <span>
-      Thử tìm bằng tên khách hoặc mã lô khác.
+      Try searching for a different customer or site.
     </span>
   </div>
 )}
@@ -447,11 +447,11 @@ const handleSaveBooking = () => {
 
         <div>
           <p className="booking-modal-kicker">
-            CHỈNH SỬA
+            EDIT BOOKING
           </p>
 
           <h2>
-            Đặt chỗ {editingBooking.id}
+            Booking {editingBooking.id}
           </h2>
         </div>
 
@@ -470,7 +470,7 @@ const handleSaveBooking = () => {
 
         <div className="booking-form-field">
           <label>
-            Tên khách hàng
+            Customer Name
           </label>
 
           <input
@@ -488,7 +488,7 @@ const handleSaveBooking = () => {
 
         <div className="booking-form-field">
           <label>
-            Số điện thoại
+            Phone number
           </label>
 
           <input
@@ -508,7 +508,7 @@ const handleSaveBooking = () => {
 
           <div className="booking-form-field">
             <label>
-              Mã lô
+              Site
             </label>
 
             <input
@@ -526,7 +526,7 @@ const handleSaveBooking = () => {
 
           <div className="booking-form-field">
             <label>
-              Khu vực
+              Category
             </label>
 
             <input
@@ -588,7 +588,7 @@ const handleSaveBooking = () => {
 
           <div className="booking-form-field">
             <label>
-              Số khách
+              Guests
             </label>
 
             <input
@@ -608,7 +608,7 @@ const handleSaveBooking = () => {
           <div className="booking-form-field">
 
             <label>
-              Trạng thái
+              Status
             </label>
 
             <select
@@ -621,20 +621,20 @@ const handleSaveBooking = () => {
               }
             >
               <option value="booked">
-                Đã đặt
-              </option>
+  Booked
+</option>
 
-              <option value="checked-in">
-                Đang ở
-              </option>
+<option value="checked-in">
+  Checked in
+</option>
 
-              <option value="checked-out">
-                Đã trả
-              </option>
+<option value="checked-out">
+  Checked out
+</option>
 
-              <option value="cancelled">
-                Đã hủy
-              </option>
+<option value="cancelled">
+  Cancelled
+</option>
             </select>
 
           </div>
@@ -651,7 +651,7 @@ const handleSaveBooking = () => {
           className="booking-modal-cancel"
           onClick={() => setEditingBooking(null)}
         >
-          Hủy
+          Cancel
         </button>
 
         <button
@@ -659,7 +659,7 @@ const handleSaveBooking = () => {
           className="booking-modal-save"
           onClick={handleSaveBooking}
         >
-          Lưu thay đổi
+          Save Changes
         </button>
 
       </div>
@@ -677,11 +677,11 @@ const handleSaveBooking = () => {
 
         <div>
           <p className="booking-modal-kicker">
-            ĐẶT CHỖ MỚI
+            NEW BOOKING
           </p>
 
           <h2>
-            Tạo đặt chỗ
+            Create Booking
           </h2>
         </div>
 
@@ -700,12 +700,12 @@ const handleSaveBooking = () => {
 
         <div className="booking-form-field">
           <label>
-            Tên khách hàng
+            Customer Name
           </label>
 
           <input
             type="text"
-            placeholder="Nhập tên khách hàng"
+            placeholder="Enter customer name"
             value={newBooking.customerName}
             onChange={(e) =>
               setNewBooking({
@@ -719,12 +719,12 @@ const handleSaveBooking = () => {
 
         <div className="booking-form-field">
           <label>
-            Số điện thoại
+            Phone number
           </label>
 
           <input
             type="text"
-            placeholder="Nhập số điện thoại"
+            placeholder="Enter phone number"
             value={newBooking.phone}
             onChange={(e) =>
               setNewBooking({
@@ -740,7 +740,7 @@ const handleSaveBooking = () => {
 
           <div className="booking-form-field">
             <label>
-              Loại khu
+              category
             </label>
 
             <select
@@ -787,7 +787,7 @@ const handleSaveBooking = () => {
               }
             >
               <option value="">
-                Chọn site
+                Select Site
               </option>
 
               {newBooking.category === 'Camping' && (
@@ -886,7 +886,7 @@ const handleSaveBooking = () => {
 
         <div className="booking-form-field">
           <label>
-            Số khách
+            Guests
           </label>
 
           <input
@@ -912,7 +912,7 @@ const handleSaveBooking = () => {
           className="booking-modal-cancel"
           onClick={() => setIsCreateModalOpen(false)}
         >
-          Hủy
+          Cancel
         </button>
 
         <button
@@ -920,7 +920,7 @@ const handleSaveBooking = () => {
           className="booking-modal-save"
           onClick={handleCreateBooking}
         >
-          Tạo đặt chỗ
+          Create Booking
         </button>
 
       </div>

@@ -1,7 +1,9 @@
 .revenue-page {
-  min-height: 100vh;
-  padding: 36px 38px 60px;
-  background: #f7f3e8;
+  min-height: 100%;
+  padding: 32px 38px 60px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Mulish', sans-serif;
   box-sizing: border-box;
 }
 
@@ -15,24 +17,27 @@
 
 .revenue-kicker {
   margin: 0 0 4px;
+  font-family: 'Mulish', sans-serif;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1.8px;
-  color: #c8662c;
+  color: var(--accent);
 }
 
 .revenue-header h1 {
   margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 42px;
-  line-height: 1.1;
-  color: #17382b;
+  font-family: 'Mulish', sans-serif;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 800;
+  color: var(--text);
 }
 
 .revenue-description {
   margin: 8px 0 0;
+  font-family: 'Mulish', sans-serif;
   font-size: 15px;
-  color: #6d756e;
+  color: var(--muted);
 }
 
 /* =========================
@@ -49,34 +54,37 @@
 .revenue-summary-card {
   min-height: 116px;
   padding: 20px 22px;
-  background: #fffdf8;
-  border: 1px solid #e4dcc8;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(43, 54, 44, 0.08);
+  box-shadow: 0 4px 12px rgba(15, 23, 18, 0.06);
   box-sizing: border-box;
 }
 
 .revenue-summary-card p {
   margin: 0 0 7px;
+  font-family: 'Mulish', sans-serif;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1px;
-  color: #536059;
+  color: var(--muted);
 }
 
 .revenue-summary-card h2 {
   margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 31px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 28px;
   line-height: 1.15;
-  color: #17382b;
+  font-weight: 800;
+  color: var(--text);
 }
 
 .revenue-summary-card span {
   display: block;
   margin-top: 7px;
+  font-family: 'Mulish', sans-serif;
   font-size: 13px;
-  color: #5e8a78;
+  color: var(--muted);
 }
 
 /* =========================
@@ -90,19 +98,20 @@
 }
 
 .revenue-card {
-  background: #fffdf8;
-  border: 1px solid #e4dcc8;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(43, 54, 44, 0.08);
+  box-shadow: 0 4px 12px rgba(15, 23, 18, 0.06);
   box-sizing: border-box;
 }
 
 .revenue-card h3 {
   margin: 0;
   padding: 20px 20px 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 19px;
-  color: #17382b;
+  font-family: 'Mulish', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
 }
 
 /* =========================
@@ -126,7 +135,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 0 4px;
-  border-bottom: 4px solid #285440;
+  border-bottom: 2px solid var(--border);
   box-sizing: border-box;
 }
 
@@ -138,26 +147,29 @@
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
+  font-family: 'Mulish', sans-serif;
   font-size: 11px;
-  color: #52635b;
+  color: var(--muted);
 }
 
 .revenue-value {
   min-height: 14px;
+  font-family: 'Mulish', sans-serif;
   font-size: 11px;
-  color: #536059;
+  font-weight: 700;
+  color: var(--muted);
 }
 
 .revenue-bar {
   width: 100%;
   max-width: 62px;
-  background: #285440;
+  background: var(--accent);
   border-radius: 6px 6px 2px 2px;
   transition: height 0.25s ease;
 }
 
 /* =========================
-   AREA REVENUE
+   REVENUE BY CATEGORY
 ========================= */
 
 .revenue-area-card {
@@ -183,26 +195,28 @@
   justify-content: space-between;
   gap: 15px;
   margin-bottom: 8px;
+  font-family: 'Mulish', sans-serif;
   font-size: 13px;
-  color: #31473c;
+  color: var(--text);
 }
 
 .revenue-area-info strong {
-  font-weight: 600;
-  color: #253b31;
+  font-family: 'Mulish', sans-serif;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .revenue-area-track {
   width: 100%;
   height: 8px;
   overflow: hidden;
-  background: #eee5cf;
+  background: var(--surface-soft);
   border-radius: 999px;
 }
 
 .revenue-area-progress {
   height: 100%;
-  background: #c8662c;
+  background: var(--accent);
   border-radius: 999px;
 }
 
@@ -226,7 +240,7 @@
   }
 
   .revenue-header h1 {
-    font-size: 34px;
+    font-size: 30px;
   }
 
   .revenue-bars {
