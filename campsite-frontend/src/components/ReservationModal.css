@@ -44,6 +44,23 @@
   margin-bottom: 28px;
 }
 
+.reservation-dates {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.reservation-dates span {
+  color: #26382f;
+  font-size: 14px;
+}
+
+.reservation-dates strong {
+  margin-right: 4px;
+}
+
 .reservation-kicker {
   margin: 0 0 8px;
 

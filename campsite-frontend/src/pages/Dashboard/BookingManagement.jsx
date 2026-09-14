@@ -78,7 +78,7 @@ useEffect(() => {
   };
 }, []);
 
-  const parseDate = (dateString) => {
+const parseDate = (dateString) => {
   if (!dateString) {
     return null;
   }
@@ -106,6 +106,20 @@ useEffect(() => {
   }
 
   return null;
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) {
+    return '-';
+  }
+
+  const date = parseDate(dateString);
+
+  if (!date) {
+    return '-';
+  }
+
+  return date.toLocaleDateString('en-GB');
 };
 
     const handleCreateBooking = () => {
@@ -384,7 +398,7 @@ const handleSaveBooking = () => {
 
       <div className="booking-date">
         <span>
-          {booking.checkIn} → {booking.checkOut}
+          {formatDate(booking.checkIn)} → {formatDate(booking.checkOut)}
         </span>
       </div>
 

@@ -18,6 +18,16 @@ const ReservationModal = ({
 
   const sites = availableSites;
 
+  const formatDate = (dateString) => {
+  if (!dateString) {
+    return '-';
+  }
+
+  const [year, month, day] = dateString.split('-');
+
+  return `${day}/${month}/${year}`;
+};
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -108,11 +118,11 @@ onClose();
             </p>
 <div className="reservation-dates">
   <span>
-    <strong>Check-in:</strong> {checkIn}
+    <strong>Check-in:</strong> {formatDate(checkIn)}
   </span>
 
   <span>
-    <strong>Check-out:</strong> {checkOut}
+    <strong>Check-out:</strong> {formatDate(checkOut)}
   </span>
 
   <span>
