@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RoomCard from '../../components/RoomCard';
 import Navbar from '../../components/Navbar';
 import './Booking.css';
@@ -7,6 +7,8 @@ import glampingImage from '../../assets/Glamping.jpg';
 import rvImage from '../../assets/RV.jpg';
 import stiltHouseImage from '../../assets/SHtest.jpg';
 import ReservationModal from '../../components/ReservationModal';
+import { siteData } from '../../data/siteData';
+
 
 const stayData = [
   {
@@ -27,7 +29,6 @@ const stayData = [
   capacity: '2–4',
   price: 500000,
   priceNote: 'per person / night',
-  remaining: 6,
 },
   {
   name: 'Luxury Glamping Tent',
@@ -47,7 +48,6 @@ const stayData = [
   capacity: '2–4',
   price: 1200000,
   priceNote: 'per person / night',
-  remaining: 3,
 },
 {
   name: 'Family Stilt Lodge',
@@ -69,7 +69,6 @@ const stayData = [
   capacity: 8,
   price: 10000000,
   priceNote: 'per night / minimum 10 guests',
-  remaining: 2,
 },
 {
   name: 'Vintage Camper Van',
@@ -88,9 +87,28 @@ const stayData = [
   capacity: '2–4',
   price: 1500000,
   priceNote: 'per person / night',
-  remaining: 1,
 },
 ];
+
+const allSites = Object.entries(siteData).flatMap(
+  ([category, sites]) =>
+    sites.map((site) => ({
+      ...site,
+      category,
+    }))
+);
+
+const isDateOverlap = (
+  requestedCheckIn,
+  requestedCheckOut,
+  bookingCheckIn,
+  bookingCheckOut
+) => {
+  return (
+    requestedCheckIn < bookingCheckOut &&
+    requestedCheckOut > bookingCheckIn
+  );
+};
 
 const Booking = () => {
   const [checkIn, setCheckIn] = useState('');
@@ -99,22 +117,173 @@ const Booking = () => {
   const [sortBy, setSortBy] = useState('Cheapest');
   const [filteredStays, setFilteredStays] = useState(stayData);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [bookings, setBookings] = useState([]);
+const [siteStatuses, setSiteStatuses] = useState({});
 
-  const handleCheck = () => {
-    const sortedStays = [...stayData];
+useEffect(() => {
+  const loadBookingData = () => {
+    const savedBookings = localStorage.getItem('bookings');
+    const savedSiteStatuses = localStorage.getItem('siteStatuses');
 
-    if (sortBy === 'Cheapest') {
-      sortedStays.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'Highest') {
-      sortedStays.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'Most popular') {
-      sortedStays.sort((a, b) => b.remaining - a.remaining);
-    }
+    setBookings(
+      savedBookings ? JSON.parse(savedBookings) : []
+    );
 
-    setFilteredStays(sortedStays);
+    setSiteStatuses(
+      savedSiteStatuses ? JSON.parse(savedSiteStatuses) : {}
+    );
   };
 
+  loadBookingData();
+
+  window.addEventListener(
+    'bookingsUpdated',
+    loadBookingData
+  );
+
+  window.addEventListener(
+    'siteStatusesUpdated',
+    loadBookingData
+  );
+
+  window.addEventListener(
+    'storage',
+    loadBookingData
+  );
+
+  return () => {
+    window.removeEventListener(
+      'bookingsUpdated',
+      loadBookingData
+    );
+
+    window.removeEventListener(
+      'siteStatusesUpdated',
+      loadBookingData
+    );
+
+    window.removeEventListener(
+      'storage',
+      loadBookingData
+    );
+  };
+}, []);
+
+const getAvailableSites = (category) => {
+  const categorySites = allSites.filter(
+    (site) => site.category === category
+  );
+
+  if (!checkIn || !checkOut) {
+    return categorySites;
+  }
+
+  const guestCount =
+    guests === '4+ guests'
+      ? 4
+      : Number.parseInt(guests, 10);
+
+  return categorySites.filter((site) => {
+    // Site is under maintenance
+    if (siteStatuses[site.id] === 'maintenance') {
+      return false;
+    }
+
+    // Site does not have enough capacity
+    if (site.capacity < guestCount) {
+      return false;
+    }
+
+    // Check for booking date conflicts
+    const hasConflict = bookings.some((booking) => {
+      if (booking.site !== site.id) {
+        return false;
+      }
+
+      // Cancelled and checked-out bookings do not block the site
+      if (
+        booking.status === 'cancelled' ||
+        booking.status === 'checked-out'
+      ) {
+        return false;
+      }
+
+      if (!booking.checkIn || !booking.checkOut) {
+        return false;
+      }
+
+      return isDateOverlap(
+        checkIn,
+        checkOut,
+        booking.checkIn,
+        booking.checkOut
+      );
+    });
+
+    return !hasConflict;
+  });
+};
+
+  const handleCheck = () => {
+  if (!checkIn || !checkOut) {
+    alert('Please select your check-in and check-out dates.');
+    return;
+  }
+
+  if (checkOut <= checkIn) {
+    alert('Check-out date must be after check-in date.');
+    return;
+  }
+
+  const guestCount =
+    guests === '4+ guests'
+      ? 4
+      : Number.parseInt(guests, 10);
+
+  const availableStays = stayData
+    .map((stay) => {
+      const availableSites = getAvailableSites(stay.type);
+
+      return {
+        ...stay,
+        availableSites,
+        remaining: availableSites.length,
+      };
+    })
+    .filter((stay) => {
+      const categorySites = allSites.filter(
+        (site) => site.category === stay.type
+      );
+
+      const hasSuitableSite = categorySites.some(
+        (site) => site.capacity >= guestCount
+      );
+
+      return (
+        hasSuitableSite &&
+        stay.remaining > 0
+      );
+    });
+
+  if (sortBy === 'Cheapest') {
+    availableStays.sort(
+      (a, b) => a.price - b.price
+    );
+  } else if (sortBy === 'Highest') {
+    availableStays.sort(
+      (a, b) => b.price - a.price
+    );
+  } else if (sortBy === 'Most popular') {
+    availableStays.sort(
+      (a, b) => b.remaining - a.remaining
+    );
+  }
+
+  setFilteredStays(availableStays);
+};
+
   const handleReserve = (room) => {
+  console.log('Reserve clicked:', room);
   setSelectedRoom(room);
 };
 
@@ -174,9 +343,13 @@ const Booking = () => {
 
         {selectedRoom && (
           <ReservationModal
-            room={selectedRoom}
-            onClose={() => setSelectedRoom(null)}
-          />
+  room={selectedRoom}
+  checkIn={checkIn}
+  checkOut={checkOut}
+  guests={guests}
+  availableSites={selectedRoom?.availableSites || []}
+  onClose={() => setSelectedRoom(null)}
+/>
 )}
       </main>
     </>

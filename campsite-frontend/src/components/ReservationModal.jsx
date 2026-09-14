@@ -1,104 +1,22 @@
 import { useState } from 'react';
 import './ReservationModal.css';
 
-const siteData = {
-  Camping: [
-    {
-      id: 'C1',
-      area: 'Pine forest',
-      type: 'Tent Site',
-      capacity: 2,
-      price: 290000,
-    },
-    {
-      id: 'C2',
-      area: 'Pine forest',
-      type: 'Tent Site',
-      capacity: 2,
-      price: 290000,
-    },
-    {
-      id: 'C3',
-      area: 'Lakeside',
-      type: 'Tent Site',
-      capacity: 2,
-      price: 320000,
-    },
-    {
-      id: 'C4',
-      area: 'Lakeside',
-      type: 'Tent Site',
-      capacity: 4,
-      price: 350000,
-    },
-  ],
 
-  Glamping: [
-    {
-      id: 'G1',
-      area: 'Streamside',
-      type: 'Glamping Tent',
-      capacity: 2,
-      price: 790000,
-    },
-    {
-      id: 'G2',
-      area: 'Streamside',
-      type: 'Glamping Tent',
-      capacity: 2,
-      price: 790000,
-    },
-    {
-      id: 'G3',
-      area: 'Pine forest',
-      type: 'Glamping Tent',
-      capacity: 4,
-      price: 950000,
-    },
-  ],
 
-  Lodge: [
-    {
-      id: 'L1',
-      area: 'Garden area',
-      type: 'Family Lodge',
-      capacity: 8,
-      price: 1190000,
-    },
-    {
-      id: 'L2',
-      area: 'Garden area',
-      type: 'Family Lodge',
-      capacity: 8,
-      price: 1190000,
-    },
-  ],
-
-  RV: [
-    {
-      id: 'RV1',
-      area: 'Lakeside',
-      type: 'Camper Van',
-      capacity: 2,
-      price: 950000,
-    },
-    {
-      id: 'RV2',
-      area: 'Lakeside',
-      type: 'Camper Van',
-      capacity: 2,
-      price: 950000,
-    },
-  ],
-};
-
-const ReservationModal = ({ room, onClose }) => {
+const ReservationModal = ({
+  room,
+  checkIn,
+  checkOut,
+  guests,
+  availableSites = [],
+  onClose,
+}) => {
   const [selectedSite, setSelectedSite] = useState(null);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
 
-  const sites = siteData[room.type] || [];
+  const sites = availableSites;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -118,22 +36,56 @@ const ReservationModal = ({ room, onClose }) => {
       return;
     }
 
-    const bookingData = {
-      room,
-      site: selectedSite,
-      customer: {
-        fullName,
-        phone,
-        email,
-      },
-    };
+  const savedBookings = localStorage.getItem('bookings');
 
-    console.log('Booking information:', bookingData);
+const existingBookings = savedBookings
+  ? JSON.parse(savedBookings)
+  : [];
 
-    alert('Your reservation request has been submitted!');
+const newBooking = {
+  id: `BK${String(existingBookings.length + 1).padStart(3, '0')}`,
 
-    onClose();
-  };
+  customerName: fullName.trim(),
+  phone: phone.trim(),
+  email: email.trim(),
+
+  site: selectedSite.id,
+  area: room.type,
+
+  checkIn,
+  checkOut,
+  guests:
+    guests === '4+ guests'
+      ? 4
+      : Number.parseInt(guests, 10),
+
+  status: 'booked',
+
+  totalAmount: selectedSite.price,
+};
+
+const updatedBookings = [
+  ...existingBookings,
+  newBooking,
+];
+
+localStorage.setItem(
+  'bookings',
+  JSON.stringify(updatedBookings)
+);
+
+window.dispatchEvent(
+  new Event('bookingsUpdated')
+);
+
+console.log('Booking created:', newBooking);
+
+alert('Your reservation request has been submitted!');
+  
+
+onClose();
+};
+
 
   if (!room) {
     return null;
@@ -154,6 +106,19 @@ const ReservationModal = ({ room, onClose }) => {
             <p className="reservation-description">
               Select a suitable campsite and enter your details.
             </p>
+<div className="reservation-dates">
+  <span>
+    <strong>Check-in:</strong> {checkIn}
+  </span>
+
+  <span>
+    <strong>Check-out:</strong> {checkOut}
+  </span>
+
+  <span>
+    <strong>Guests:</strong> {guests}
+  </span>
+</div>
           </div>
 
           <button
