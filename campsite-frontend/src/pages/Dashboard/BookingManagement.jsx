@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './BookingManagement.css';
 import { useLocation } from 'react-router-dom';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export default function BookingManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [bookings, setBookings] = useState(() => {
-  const savedBookings = localStorage.getItem('bookings');
-  const location = useLocation();
-
-  return savedBookings
-    ? JSON.parse(savedBookings)
-    : bookingData;
-});
-
+ const [bookings, setBookings] = useState([]);
+ const location = useLocation();
 
   const [editingBooking, setEditingBooking] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -29,6 +23,56 @@ export default function BookingManagement() {
   }
 }, [location.state]);
 
+useEffect(() => {
+  const fetchBookings = async () => {
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        alert('Please log in again.');
+        return;
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/bookings`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(result.message || 'Failed to load bookings.');
+        return;
+      }
+
+      const formattedBookings = result.data.map((booking) => ({
+        id: booking.id,
+        customerName: booking.customer_name,
+        phone: booking.phone,
+        site: booking.site_id,
+        area: booking.site_category,
+        checkIn: booking.check_in,
+        checkOut: booking.check_out,
+        guests: booking.guests,
+        status: booking.status,
+        totalAmount: Number(booking.total_amount),
+      }));
+
+      setBookings(formattedBookings);
+    } catch (error) {
+      console.error('Failed to load bookings:', error);
+      alert('Cannot connect to server.');
+    }
+  };
+
+  fetchBookings();
+}, []);
+
   const [newBooking, setNewBooking] = useState({
   customerName: '',
   phone: '',
@@ -40,18 +84,6 @@ export default function BookingManagement() {
 });
 
 const [siteStatuses, setSiteStatuses] = useState({});
-
-useEffect(() => {
-  localStorage.setItem(
-    'bookings',
-    JSON.stringify(bookings)
-  );
-
-  // Thông báo cho các page khác rằng bookings đã thay đổi
-  window.dispatchEvent(
-    new Event('bookingsUpdated')
-  );
-}, [bookings]);
 
 useEffect(() => {
   const loadSiteStatuses = () => {
@@ -83,9 +115,10 @@ const parseDate = (dateString) => {
     return null;
   }
 
-  // Format: YYYY-MM-DD
+  // Format: YYYY-MM-DD or ISO datetime
   if (dateString.includes('-')) {
-    const [year, month, day] = dateString.split('-');
+    const datePart = dateString.slice(0, 10);
+    const [year, month, day] = datePart.split('-');
 
     return new Date(
       Number(year),
@@ -122,7 +155,7 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('en-GB');
 };
 
-    const handleCreateBooking = () => {
+    const handleCreateBooking = async () => {
   if (!newBooking.customerName.trim()) {
     alert('Please enter the customer name.');
     return;
@@ -153,85 +186,60 @@ const formatDate = (dateString) => {
     return;
   }
 
-  const selectedSite = newBooking.site;
+  try {
+    const token = localStorage.getItem('token');
 
-// Đọc trạng thái site mới nhất từ localStorage
-const savedSiteStatuses = localStorage.getItem('siteStatuses');
+    if (!token) {
+      alert('Please log in again.');
+      return;
+    }
 
-const currentSiteStatuses = savedSiteStatuses
-  ? JSON.parse(savedSiteStatuses)
-  : {};
+    const response = await fetch(
+      `${API_BASE_URL}/bookings`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          fullName: newBooking.customerName.trim(),
+          phone: newBooking.phone.trim(),
+          siteId: newBooking.site,
+          checkIn: newBooking.checkIn,
+          checkOut: newBooking.checkOut,
+          guests: Number(newBooking.guests),
+        }),
+      }
+    );
 
-const currentSiteStatus = currentSiteStatuses[selectedSite];
+    const result = await response.json();
 
-// Kiểm tra site có đang bảo trì hay không
-if (currentSiteStatus === 'maintenance') {
-  alert(`${selectedSite} is currently under maintenance and cannot be booked.`);
-  return;
-}
+    if (!response.ok) {
+      alert(result.message || 'Failed to create booking.');
+      return;
+    }
 
-const siteAlreadyBooked = bookings.some((booking) => {
-  // Chỉ kiểm tra booking của cùng site
-  if (booking.site !== selectedSite) {
-    return false;
+    alert('Booking created successfully.');
+
+    setNewBooking({
+      customerName: '',
+      phone: '',
+      category: 'Camping',
+      site: '',
+      checkIn: '',
+      checkOut: '',
+      guests: 1,
+    });
+
+    setIsCreateModalOpen(false);
+
+    // Reload bookings from MySQL
+    window.location.reload();
+  } catch (error) {
+    console.error('Create booking error:', error);
+    alert('Cannot connect to server.');
   }
-
-  // Booking đã trả hoặc đã hủy thì không còn chiếm site
-  if (
-    booking.status === 'checked-out' ||
-    booking.status === 'cancelled'
-  ) {
-    return false;
-  }
-
-  // Kiểm tra khoảng ngày có bị trùng hay không
-  const existingCheckIn = parseDate(booking.checkIn);
-const existingCheckOut = parseDate(booking.checkOut);
-
-const newCheckIn = parseDate(newBooking.checkIn);
-const newCheckOut = parseDate(newBooking.checkOut);
-
-  return (
-    newCheckIn < existingCheckOut &&
-    newCheckOut > existingCheckIn
-  );
-});
-
-if (siteAlreadyBooked) {
-  alert(
-    `${selectedSite} is already booked for the selected period.`
-  );
-  return;
-}
-
-  const newBookingItem = {
-    id: `BK${String(bookings.length + 1).padStart(3, '0')}`,
-    customerName: newBooking.customerName.trim(),
-    phone: newBooking.phone.trim(),
-    site: newBooking.site,
-    area: newBooking.category,
-    checkIn: newBooking.checkIn,
-    checkOut: newBooking.checkOut,
-    guests: newBooking.guests,
-    status: 'booked',
-  };
-
-  setBookings((currentBookings) => [
-    ...currentBookings,
-    newBookingItem,
-  ]);
-
-  setNewBooking({
-    customerName: '',
-    phone: '',
-    category: 'Camping',
-    site: '',
-    checkIn: '',
-    checkOut: '',
-    guests: 1,
-  });
-
-  setIsCreateModalOpen(false);
 };
 
 
@@ -239,24 +247,89 @@ if (siteAlreadyBooked) {
   setEditingBooking(booking);
 };
 
-const handleSaveBooking = () => {
+const handleSaveBooking = async () => {
   if (!editingBooking) {
     return;
-  };
+  }
 
+  if (!editingBooking.customerName.trim()) {
+    alert('Please enter the customer name.');
+    return;
+  }
 
-  setBookings((currentBookings) =>
-    currentBookings.map((booking) =>
-      booking.id === editingBooking.id
-        ? editingBooking
-        : booking
-    )
-  );
+  if (!editingBooking.phone.trim()) {
+    alert('Please enter the phone number.');
+    return;
+  }
 
-  setEditingBooking(null);
+  if (!editingBooking.site) {
+    alert('Please select a site.');
+    return;
+  }
+
+  if (!editingBooking.checkIn) {
+    alert('Please select the check-in date.');
+    return;
+  }
+
+  if (!editingBooking.checkOut) {
+    alert('Please select the check-out date.');
+    return;
+  }
+
+  if (editingBooking.checkOut <= editingBooking.checkIn) {
+    alert('The check-out date must be after the check-in date.');
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert('Please log in again.');
+      return;
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/bookings/${editingBooking.id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+  fullName: editingBooking.customerName.trim(),
+  phone: editingBooking.phone.trim(),
+  siteId: editingBooking.site,
+  checkIn: editingBooking.checkIn.slice(0, 10),
+  checkOut: editingBooking.checkOut.slice(0, 10),
+  guests: Number(editingBooking.guests),
+  status: editingBooking.status,
+}),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.message || 'Failed to update booking.');
+      return;
+    }
+
+    alert('Booking updated successfully.');
+
+    setEditingBooking(null);
+
+    // Reload bookings from MySQL
+    window.location.reload();
+  } catch (error) {
+    console.error('Update booking error:', error);
+    alert('Cannot connect to server.');
+  }
 };
 
-  const handleDeleteBooking = (bookingId) => {
+ const handleDeleteBooking = async (bookingId) => {
   const booking = bookings.find(
     (item) => item.id === bookingId
   );
@@ -266,18 +339,46 @@ const handleSaveBooking = () => {
   }
 
   const confirmed = window.confirm(
-    `Are you sure you want to delete the booking for ${booking.customerName}?`
+    `Are you sure you want to cancel the booking for ${booking.customerName}?`
   );
 
   if (!confirmed) {
     return;
   }
 
-  setBookings((currentBookings) =>
-    currentBookings.filter(
-      (item) => item.id !== bookingId
-    )
-  );
+  try {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert('Please log in again.');
+      return;
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/bookings/${bookingId}/cancel`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.message || 'Failed to cancel booking.');
+      return;
+    }
+
+    alert('Booking cancelled successfully.');
+
+    // Reload bookings from MySQL
+    window.location.reload();
+  } catch (error) {
+    console.error('Cancel booking error:', error);
+    alert('Cannot connect to server.');
+  }
 };
 
   const filteredBookings = bookings.filter((booking) => {

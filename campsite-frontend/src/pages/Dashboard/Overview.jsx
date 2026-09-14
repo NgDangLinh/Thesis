@@ -1,84 +1,99 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './Overview.css';
-import { siteData } from '../../data/siteData';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = 'http://localhost:5000/api';
 export default function Overview() {
-  const [bookings, setBookings] = useState([]);
-  const [siteStatuses, setSiteStatuses] = useState({});
-  const navigate = useNavigate();
+ const [bookings, setBookings] = useState([]);
+const [sites, setSites] = useState([]);
+const navigate = useNavigate();
 
-  // =========================
-  // LOAD BOOKINGS
-  // =========================
+// =========================
+// LOAD DATA FROM API
+// =========================
 
-  useEffect(() => {
-    const loadBookings = () => {
-      const savedBookings =
-        localStorage.getItem('bookings');
+useEffect(() => {
+  const loadOverviewData = async () => {
+    try {
+      const token = localStorage.getItem('token');
 
-      if (savedBookings) {
-        setBookings(JSON.parse(savedBookings));
-      } else {
-        setBookings([]);
+      if (!token) {
+        alert('Please log in again.');
+        return;
       }
-    };
 
-    loadBookings();
+      const [bookingsResponse, sitesResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}/bookings`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
 
-    window.addEventListener(
-      'bookingsUpdated',
-      loadBookings
-    );
+        fetch(`${API_BASE_URL}/sites`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+      ]);
 
-    return () => {
-      window.removeEventListener(
-        'bookingsUpdated',
-        loadBookings
-      );
-    };
-  }, []);
+      const bookingsResult = await bookingsResponse.json();
+      const sitesResult = await sitesResponse.json();
 
-  // =========================
-  // LOAD SITE STATUSES
-  // =========================
-
-  useEffect(() => {
-    const loadSiteStatuses = () => {
-      const savedSiteStatuses =
-        localStorage.getItem('siteStatuses');
-
-      if (savedSiteStatuses) {
-        setSiteStatuses(
-          JSON.parse(savedSiteStatuses)
+      if (!bookingsResponse.ok) {
+        alert(
+          bookingsResult.message ||
+            'Failed to load bookings.'
         );
-      } else {
-        setSiteStatuses({});
+        return;
       }
-    };
 
-    loadSiteStatuses();
+      if (!sitesResponse.ok) {
+        alert(
+          sitesResult.message ||
+            'Failed to load sites.'
+        );
+        return;
+      }
 
-    window.addEventListener(
-      'siteStatusesUpdated',
-      loadSiteStatuses
-    );
-
-    return () => {
-      window.removeEventListener(
-        'siteStatusesUpdated',
-        loadSiteStatuses
+      const formattedBookings = bookingsResult.data.map(
+        (booking) => ({
+          id: booking.id,
+          customerName: booking.customer_name,
+          phone: booking.phone,
+          site: booking.site_id,
+          area: booking.site_category,
+          checkIn: booking.check_in,
+          checkOut: booking.check_out,
+          guests: booking.guests,
+          status: booking.status,
+          totalAmount: Number(booking.total_amount),
+        })
       );
-    };
-  }, []);
+
+      setBookings(formattedBookings);
+      setSites(sitesResult.data);
+    } catch (error) {
+      console.error(
+        'Failed to load overview data:',
+        error
+      );
+
+      alert('Cannot connect to server.');
+    }
+  };
+
+  loadOverviewData();
+}, []);
 
   // =========================
   // ALL SITES
   // =========================
 
-  const allSites = useMemo(() => {
-    return Object.values(siteData).flat();
-  }, []);
+ const allSites = useMemo(() => {
+  return sites;
+}, [sites]);
 
   // =========================
   // ACTIVE SITES
@@ -87,11 +102,10 @@ export default function Overview() {
   // =========================
 
   const activeSites = useMemo(() => {
-    return allSites.filter(
-      (site) =>
-        siteStatuses[site.id] !== 'maintenance'
-    );
-  }, [allSites, siteStatuses]);
+  return allSites.filter(
+    (site) => site.status !== 'maintenance'
+  );
+}, [allSites]);
 
   const totalSites = activeSites.length;
 
@@ -100,36 +114,37 @@ export default function Overview() {
   // =========================
 
   const parseDate = (dateString) => {
-    if (!dateString) {
-      return null;
-    }
-
-    // YYYY-MM-DD
-    if (dateString.includes('-')) {
-      const [year, month, day] =
-        dateString.split('-');
-
-      return new Date(
-        Number(year),
-        Number(month) - 1,
-        Number(day)
-      );
-    }
-
-    // DD/MM/YYYY
-    if (dateString.includes('/')) {
-      const [day, month, year] =
-        dateString.split('/');
-
-      return new Date(
-        Number(year),
-        Number(month) - 1,
-        Number(day)
-      );
-    }
-
+  if (!dateString) {
     return null;
-  };
+  }
+
+  // YYYY-MM-DD or ISO date
+  if (dateString.includes('-')) {
+    const datePart = dateString.slice(0, 10);
+    const [year, month, day] =
+      datePart.split('-');
+
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day)
+    );
+  }
+
+  // DD/MM/YYYY
+  if (dateString.includes('/')) {
+    const [day, month, year] =
+      dateString.split('/');
+
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day)
+    );
+  }
+
+  return null;
+};
 
   const isSameDay = (date1, date2) => {
     if (!date1 || !date2) {
@@ -163,21 +178,11 @@ export default function Overview() {
   // =========================
 
   const getSiteInfo = (siteId) => {
-    for (const category of Object.keys(siteData)) {
-      const site = siteData[category].find(
-        (item) => item.id === siteId
-      );
-
-      if (site) {
-        return {
-          ...site,
-          category,
-        };
-      }
-    }
-
-    return null;
-  };
+  return (
+    sites.find((site) => site.id === siteId) ||
+    null
+  );
+};
 
   // =========================
   // CHECK WHETHER SITE IS
@@ -186,12 +191,9 @@ export default function Overview() {
 
   const isSiteOccupied = (site) => {
     // Maintenance has highest priority
-    if (
-      siteStatuses[site.id] ===
-      'maintenance'
-    ) {
-      return false;
-    }
+   if (site.status === 'maintenance') {
+  return false;
+}
 
     return bookings.some((booking) => {
       if (booking.site !== site.id) {
@@ -236,7 +238,6 @@ export default function Overview() {
   }, [
     activeSites,
     bookings,
-    siteStatuses,
     today,
   ]);
 
@@ -305,24 +306,20 @@ export default function Overview() {
         }
 
         // Maintenance sites are not active rentals
-        if (
-          siteStatuses[
-            booking.site
-          ] === 'maintenance'
-        ) {
-          return total;
-        }
+        if (siteInfo.status === 'maintenance') {
+  return total;
+}
 
         return (
-          total +
-          siteInfo.price
-        );
+  total +
+  Number(siteInfo.price_per_night)
+);
       },
       0
     );
   }, [
     bookings,
-    siteStatuses,
+    sites,
     today,
   ]);
 
@@ -447,44 +444,44 @@ export default function Overview() {
     ]);
 
   // =========================
-  // STATUS BY CATEGORY
-  // =========================
+// STATUS BY CATEGORY
+// =========================
 
-  const categoryStatus =
-    useMemo(() => {
-      return Object.entries(
-        siteData
-      ).map(
-        ([category, sites]) => {
-          // Remove maintenance sites
-          const activeCategorySites =
-            sites.filter(
-              (site) =>
-                siteStatuses[
-                  site.id
-                ] !==
-                'maintenance'
-            );
+const categoryStatus = useMemo(() => {
+  const categories = [
+    'Camping',
+    'Glamping',
+    'Lodge',
+    'RV',
+  ];
 
-          const occupied =
-            activeCategorySites.filter(
-              (site) =>
-                isSiteOccupied(site)
-            ).length;
+  return categories.map((category) => {
+    const categorySites = sites.filter(
+      (site) => site.category === category
+    );
 
-          return {
-            category,
-            occupied,
-            total:
-              activeCategorySites.length,
-          };
-        }
+    // Remove maintenance sites
+    const activeCategorySites =
+      categorySites.filter(
+        (site) => site.status !== 'maintenance'
       );
-    }, [
-      bookings,
-      siteStatuses,
-      today,
-    ]);
+
+    const occupied =
+      activeCategorySites.filter(
+        (site) => isSiteOccupied(site)
+      ).length;
+
+    return {
+      category,
+      occupied,
+      total: activeCategorySites.length,
+    };
+  });
+}, [
+  bookings,
+  sites,
+  today,
+]);
 
   // =========================
   // FORMAT CURRENCY

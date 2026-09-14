@@ -28,72 +28,62 @@ const ReservationModal = ({
   return `${day}/${month}/${year}`;
 };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!selectedSite) {
-      alert('Please select a campsite.');
+  if (!fullName.trim()) {
+    alert('Please enter your full name.');
+    return;
+  }
+
+  if (!phone.trim()) {
+    alert('Please enter your phone number.');
+    return;
+  }
+
+  if (!selectedSite) {
+    alert('Please select a site.');
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      'http://localhost:5000/api/bookings',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          phone: phone.trim(),
+          siteId: selectedSite.id,
+          checkIn,
+          checkOut,
+          guests:
+            guests === '4+ guests'
+              ? 4
+              : Number.parseInt(guests, 10),
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.message || 'Failed to create reservation.');
       return;
     }
 
-    if (!fullName.trim()) {
-      alert('Please enter your full name.');
-      return;
-    }
+    console.log('Booking created:', result.data);
 
-    if (!phone.trim()) {
-      alert('Please enter your phone number.');
-      return;
-    }
+    alert('Your reservation has been submitted successfully.');
 
-  const savedBookings = localStorage.getItem('bookings');
-
-const existingBookings = savedBookings
-  ? JSON.parse(savedBookings)
-  : [];
-
-const newBooking = {
-  id: `BK${String(existingBookings.length + 1).padStart(3, '0')}`,
-
-  customerName: fullName.trim(),
-  phone: phone.trim(),
-  email: email.trim(),
-
-  site: selectedSite.id,
-  area: room.type,
-
-  checkIn,
-  checkOut,
-  guests:
-    guests === '4+ guests'
-      ? 4
-      : Number.parseInt(guests, 10),
-
-  status: 'booked',
-
-  totalAmount: selectedSite.price,
-};
-
-const updatedBookings = [
-  ...existingBookings,
-  newBooking,
-];
-
-localStorage.setItem(
-  'bookings',
-  JSON.stringify(updatedBookings)
-);
-
-window.dispatchEvent(
-  new Event('bookingsUpdated')
-);
-
-console.log('Booking created:', newBooking);
-
-alert('Your reservation request has been submitted!');
-  
-
-onClose();
+    onClose();
+  } catch (error) {
+    console.error('Reservation error:', error);
+    alert('Cannot connect to server.');
+  }
 };
 
 

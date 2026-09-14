@@ -1,84 +1,96 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './UserManagement.css';
-import { siteData } from '../../data/siteData';
+
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export default function UserManagement() {
   const [bookings, setBookings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // =========================
-  // LOAD BOOKINGS
-  // =========================
+// =========================
+// LOAD BOOKINGS FROM API
+// =========================
 
-  useEffect(() => {
-    const loadBookings = () => {
-      const savedBookings =
-        localStorage.getItem('bookings');
+useEffect(() => {
+  const loadBookings = async () => {
+    try {
+      const token = localStorage.getItem('token');
 
-      if (savedBookings) {
-        setBookings(JSON.parse(savedBookings));
-      } else {
-        setBookings([]);
+      if (!token) {
+        alert('Please log in again.');
+        return;
       }
-    };
 
-    loadBookings();
-
-    window.addEventListener(
-      'bookingsUpdated',
-      loadBookings
-    );
-
-    return () => {
-      window.removeEventListener(
-        'bookingsUpdated',
-        loadBookings
-      );
-    };
-  }, []);
-
-  // =========================
-  // FIND SITE
-  // =========================
-
-  const getSiteInfo = (siteId) => {
-    for (const category of Object.keys(siteData)) {
-      const site = siteData[category].find(
-        (item) => item.id === siteId
+      const response = await fetch(
+        `${API_BASE_URL}/bookings`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      if (site) {
-        return {
-          ...site,
-          category,
-        };
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(
+          result.message ||
+            'Failed to load bookings.'
+        );
+        return;
       }
+
+      const formattedBookings =
+        result.data.map((booking) => ({
+          id: booking.id,
+          customerName: booking.customer_name,
+          phone: booking.phone,
+          site: booking.site_id,
+          checkIn: booking.check_in,
+          checkOut: booking.check_out,
+          guests: booking.guests,
+          status: booking.status,
+          totalAmount: Number(
+            booking.total_amount
+          ),
+        }));
+
+      setBookings(formattedBookings);
+    } catch (error) {
+      console.error(
+        'Failed to load customer data:',
+        error
+      );
+
+      alert('Cannot connect to server.');
     }
-
-    return null;
   };
+
+  loadBookings();
+}, []);
+
+
 
   // =========================
   // PARSE DATE
   // =========================
 
   const parseDate = (dateString) => {
-    if (!dateString) {
-      return null;
-    }
+   // YYYY-MM-DD or ISO date
+if (dateString.includes('-')) {
+  const datePart =
+    dateString.slice(0, 10);
 
-    // YYYY-MM-DD
-    if (dateString.includes('-')) {
-      const [year, month, day] =
-        dateString.split('-');
+  const [year, month, day] =
+    datePart.split('-');
 
-      return new Date(
-        Number(year),
-        Number(month) - 1,
-        Number(day)
-      );
-    }
-
+  return new Date(
+    Number(year),
+    Number(month) - 1,
+    Number(day)
+  );
+}
     // DD/MM/YYYY
     if (dateString.includes('/')) {
       const [day, month, year] =
@@ -116,28 +128,6 @@ export default function UserManagement() {
           millisecondsPerDay
       )
     );
-  };
-
-  // =========================
-  // GET BOOKING PRICE
-  // =========================
-
-  const getBookingPrice = (booking) => {
-    const siteInfo = getSiteInfo(booking.site);
-
-    if (siteInfo) {
-      return siteInfo.price;
-    }
-
-    // Fallback cho dữ liệu booking cũ
-    const categoryPrices = {
-      Camping: 290000,
-      Glamping: 790000,
-      Lodge: 1190000,
-      RV: 950000,
-    };
-
-    return categoryPrices[booking.area] || 0;
   };
 
   // =========================
@@ -211,16 +201,8 @@ export default function UserManagement() {
         return;
       }
 
-      const pricePerNight =
-        getBookingPrice(booking);
-
-      const nights = getNights(
-        booking.checkIn,
-        booking.checkOut
-      );
-
       customerMap[key].totalSpent +=
-        pricePerNight * nights;
+  Number(booking.totalAmount || 0);
     });
 
     return Object.values(customerMap).sort(

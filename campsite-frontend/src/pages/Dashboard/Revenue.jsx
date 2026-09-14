@@ -1,80 +1,76 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './Revenue.css';
-import { siteData } from '../../data/siteData';
+
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export default function Revenue() {
   const [bookings, setBookings] = useState([]);
 
   // =========================
-  // LOAD BOOKINGS
-  // =========================
+// LOAD BOOKINGS FROM API
+// =========================
 
-  useEffect(() => {
-    const loadBookings = () => {
-      const savedBookings = localStorage.getItem('bookings');
+useEffect(() => {
+  const loadBookings = async () => {
+    try {
+      const token = localStorage.getItem('token');
 
-      if (savedBookings) {
-        setBookings(JSON.parse(savedBookings));
-      } else {
-        setBookings([]);
+      if (!token) {
+        alert('Please log in again.');
+        return;
       }
-    };
 
-    loadBookings();
-
-    window.addEventListener('bookingsUpdated', loadBookings);
-
-    return () => {
-      window.removeEventListener(
-        'bookingsUpdated',
-        loadBookings
-      );
-    };
-  }, []);
-
-  // =========================
-  // TÌM THÔNG TIN SITE
-  // =========================
-
-  const getSiteInfo = (siteId) => {
-    for (const category of Object.keys(siteData)) {
-      const site = siteData[category].find(
-        (item) => item.id === siteId
+      const response = await fetch(
+        `${API_BASE_URL}/bookings`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      if (site) {
-        return {
-          ...site,
-          category,
-        };
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(
+          result.message ||
+            'Failed to load bookings.'
+        );
+        return;
       }
-    }
 
-    return null;
+      const formattedBookings =
+        result.data.map((booking) => ({
+          id: booking.id,
+          customerName: booking.customer_name,
+          phone: booking.phone,
+          site: booking.site_id,
+          area: booking.site_category,
+          checkIn: booking.check_in,
+          checkOut: booking.check_out,
+          guests: booking.guests,
+          status: booking.status,
+          totalAmount: Number(
+            booking.total_amount
+          ),
+        }));
+
+      setBookings(formattedBookings);
+    } catch (error) {
+      console.error(
+        'Failed to load revenue data:',
+        error
+      );
+
+      alert('Cannot connect to server.');
+    }
   };
 
-  // =========================
-  // TÍNH GIÁ BOOKING
-  // =========================
+  loadBookings();
+}, []);
 
-  const getBookingPrice = (booking) => {
-    const siteInfo = getSiteInfo(booking.site);
 
-    // Nếu site tồn tại trong siteData
-    if (siteInfo) {
-      return siteInfo.price;
-    }
-
-    // Booking cũ có thể lưu category vào area
-    const categoryPrices = {
-      Camping: 290000,
-      Glamping: 790000,
-      Lodge: 1190000,
-      RV: 950000,
-    };
-
-    return categoryPrices[booking.area] || 0;
-  };
 
   // =========================
   // PARSE DATE
@@ -87,14 +83,17 @@ export default function Revenue() {
 
     // Format: YYYY-MM-DD
     if (dateString.includes('-')) {
-      const [year, month, day] = dateString.split('-');
+  const datePart = dateString.slice(0, 10);
 
-      return new Date(
-        Number(year),
-        Number(month) - 1,
-        Number(day)
-      );
-    }
+  const [year, month, day] =
+    datePart.split('-');
+
+  return new Date(
+    Number(year),
+    Number(month) - 1,
+    Number(day)
+  );
+}
 
     // Format: DD/MM/YYYY
     if (dateString.includes('/')) {
@@ -138,21 +137,30 @@ const getRevenueInPeriod = (
   if (
     booking.status === 'cancelled' ||
     !booking.checkIn ||
-    !booking.checkOut
+    !booking.checkOut ||
+    !booking.totalAmount
   ) {
     return 0;
   }
 
-  const checkIn = parseDate(booking.checkIn);
-  const checkOut = parseDate(booking.checkOut);
+  const checkIn = parseDate(
+    booking.checkIn
+  );
+
+  const checkOut = parseDate(
+    booking.checkOut
+  );
 
   if (!checkIn || !checkOut) {
     return 0;
   }
 
-  const pricePerNight = getBookingPrice(booking);
+  const totalNights = getNights(
+    booking.checkIn,
+    booking.checkOut
+  );
 
-  if (!pricePerNight) {
+  if (totalNights <= 0) {
     return 0;
   }
 
@@ -170,12 +178,19 @@ const getRevenueInPeriod = (
     return 0;
   }
 
-  const nights = Math.ceil(
+  const nightsInPeriod = Math.ceil(
     (actualEnd - actualStart) /
       (1000 * 60 * 60 * 24)
   );
 
-  return nights * pricePerNight;
+  const revenuePerNight =
+    Number(booking.totalAmount) /
+    totalNights;
+
+  return (
+    nightsInPeriod *
+    revenuePerNight
+  );
 };
 
   // =========================
@@ -238,11 +253,7 @@ const getRevenueInPeriod = (
       return;
     }
 
-    const pricePerNight = getBookingPrice(booking);
 
-    if (!pricePerNight) {
-      return;
-    }
 
     result.forEach((day) => {
       const dayStart = new Date(day.date);
@@ -291,12 +302,29 @@ const getRevenueInPeriod = (
   // DOANH THU THEO LOẠI HÌNH
   // =========================
 
-  const categoryRevenue = useMemo(() => {
+ const categoryRevenue = useMemo(() => {
   const result = {
     Camping: 0,
     Glamping: 0,
     Lodge: 0,
     RV: 0,
+  };
+
+  const siteCategoryMap = {
+    C1: 'Camping',
+    C2: 'Camping',
+    C3: 'Camping',
+    C4: 'Camping',
+
+    G1: 'Glamping',
+    G2: 'Glamping',
+    G3: 'Glamping',
+
+    L1: 'Lodge',
+    L2: 'Lodge',
+
+    RV1: 'RV',
+    RV2: 'RV',
   };
 
   const today = new Date();
@@ -316,12 +344,6 @@ const getRevenueInPeriod = (
   );
 
   bookings.forEach((booking) => {
-    const siteInfo = getSiteInfo(booking.site);
-
-    if (!siteInfo) {
-      return;
-    }
-
     const revenue = getRevenueInPeriod(
       booking,
       periodStart,
@@ -332,9 +354,10 @@ const getRevenueInPeriod = (
       return;
     }
 
-    const category = siteInfo.category;
+    const category =
+      siteCategoryMap[booking.site];
 
-    if (result[category] !== undefined) {
+    if (category) {
       result[category] += revenue;
     }
   });

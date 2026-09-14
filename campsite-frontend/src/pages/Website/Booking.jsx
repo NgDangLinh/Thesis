@@ -169,13 +169,9 @@ useEffect(() => {
   };
 }, []);
 
-const getAvailableSites = (category) => {
-  const categorySites = allSites.filter(
-    (site) => site.category === category
-  );
-
+const getAvailableSites = async (category) => {
   if (!checkIn || !checkOut) {
-    return categorySites;
+    return [];
   }
 
   const guestCount =
@@ -183,48 +179,46 @@ const getAvailableSites = (category) => {
       ? 4
       : Number.parseInt(guests, 10);
 
-  return categorySites.filter((site) => {
-    // Site is under maintenance
-    if (siteStatuses[site.id] === 'maintenance') {
-      return false;
-    }
-
-    // Site does not have enough capacity
-    if (site.capacity < guestCount) {
-      return false;
-    }
-
-    // Check for booking date conflicts
-    const hasConflict = bookings.some((booking) => {
-      if (booking.site !== site.id) {
-        return false;
-      }
-
-      // Cancelled and checked-out bookings do not block the site
-      if (
-        booking.status === 'cancelled' ||
-        booking.status === 'checked-out'
-      ) {
-        return false;
-      }
-
-      if (!booking.checkIn || !booking.checkOut) {
-        return false;
-      }
-
-      return isDateOverlap(
-        checkIn,
-        checkOut,
-        booking.checkIn,
-        booking.checkOut
-      );
+  try {
+    const params = new URLSearchParams({
+      category,
+      checkIn,
+      checkOut,
+      guests: String(guestCount),
     });
 
-    return !hasConflict;
-  });
+    const response = await fetch(
+      `http://localhost:5000/api/sites/availability?${params.toString()}`
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.message || 'Failed to check availability.');
+      return [];
+    }
+
+    return result.data.map((site) => ({
+      ...site,
+      price:
+        category === 'Camping'
+          ? 500000
+          : category === 'Glamping'
+          ? 1200000
+          : category === 'Lodge'
+          ? 10000000
+          : category === 'RV'
+          ? 1500000
+          : Number(site.price_per_night),
+    }));
+  } catch (error) {
+    console.error('Availability error:', error);
+    alert('Cannot connect to server.');
+    return [];
+  }
 };
 
-  const handleCheck = () => {
+ const handleCheck = async () => {
   if (!checkIn || !checkOut) {
     alert('Please select your check-in and check-out dates.');
     return;
@@ -235,51 +229,42 @@ const getAvailableSites = (category) => {
     return;
   }
 
-  const guestCount =
-    guests === '4+ guests'
-      ? 4
-      : Number.parseInt(guests, 10);
+  try {
+    const availableStays = await Promise.all(
+      stayData.map(async (stay) => {
+        const availableSites = await getAvailableSites(stay.type);
 
-  const availableStays = stayData
-    .map((stay) => {
-      const availableSites = getAvailableSites(stay.type);
-
-      return {
-        ...stay,
-        availableSites,
-        remaining: availableSites.length,
-      };
-    })
-    .filter((stay) => {
-      const categorySites = allSites.filter(
-        (site) => site.category === stay.type
-      );
-
-      const hasSuitableSite = categorySites.some(
-        (site) => site.capacity >= guestCount
-      );
-
-      return (
-        hasSuitableSite &&
-        stay.remaining > 0
-      );
-    });
-
-  if (sortBy === 'Cheapest') {
-    availableStays.sort(
-      (a, b) => a.price - b.price
+        return {
+          ...stay,
+          availableSites,
+          remaining: availableSites.length,
+        };
+      })
     );
-  } else if (sortBy === 'Highest') {
-    availableStays.sort(
-      (a, b) => b.price - a.price
+
+    const filteredAvailableStays = availableStays.filter(
+      (stay) => stay.remaining > 0
     );
-  } else if (sortBy === 'Most popular') {
-    availableStays.sort(
-      (a, b) => b.remaining - a.remaining
-    );
+
+    if (sortBy === 'Cheapest') {
+      filteredAvailableStays.sort(
+        (a, b) => a.price - b.price
+      );
+    } else if (sortBy === 'Highest') {
+      filteredAvailableStays.sort(
+        (a, b) => b.price - a.price
+      );
+    } else if (sortBy === 'Most popular') {
+      filteredAvailableStays.sort(
+        (a, b) => b.remaining - a.remaining
+      );
+    }
+
+    setFilteredStays(filteredAvailableStays);
+  } catch (error) {
+    console.error('Search availability error:', error);
+    alert('Failed to search available stays.');
   }
-
-  setFilteredStays(availableStays);
 };
 
   const handleReserve = (room) => {
