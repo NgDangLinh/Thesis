@@ -20,9 +20,13 @@ const RoomCard = ({ room, onReserve }) => {
           </div>
 
           <div className="room-card__price">
-            <span>{room.price.toLocaleString()} VND</span>
-            <small>per night</small>
-          </div>
+  <span>
+    {room.pricePrefix ? `${room.pricePrefix} ` : ''}
+    {room.price.toLocaleString()} VND
+  </span>
+
+  <small>{room.priceNote || 'per night'}</small>
+</div>
         </div>
 
         <div className="room-card__features">
@@ -31,10 +35,12 @@ const RoomCard = ({ room, onReserve }) => {
             <span>{room.view}</span>
           </div>
 
-          <div className="room-card__feature">
-            <FaRulerCombined className="icon" />
-            <span>{room.area} sqm</span>
-          </div>
+          {room.area && (
+  <div className="room-card__feature">
+    <FaRulerCombined className="icon" />
+    <span>{room.area} sqm</span>
+  </div>
+)}
 
           <div className="room-card__feature">
             <FaBed className="icon" />
@@ -42,9 +48,13 @@ const RoomCard = ({ room, onReserve }) => {
           </div>
 
           <div className="room-card__feature">
-            <FaUser className="icon" />
-            <span>Up to {room.capacity} guests</span>
-          </div>
+  <FaUser className="icon" />
+  <span>
+    {typeof room.capacity === 'string'
+      ? `${room.capacity} guests`
+      : `Up to ${room.capacity} guests`}
+  </span>
+</div>
         </div>
 
         <div className="room-card__details">

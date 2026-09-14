@@ -142,7 +142,7 @@
 .intro-section,
 .stays-section,
 .experience-section,
-.stats-section,
+.reviews-section,
 .cta-section {
   width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
@@ -272,57 +272,110 @@
 .amenity-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 12px;
+  gap: 16px;
 }
 
 .amenity-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-height: 66px;
-  padding: 18px;
-  background: #fff;
-  color: #26382f;
-  font-weight: 800;
+  gap: 18px;
+  min-height: 80px;
+  padding: 18px 22px;
+  background: var(--surface);
   border-radius: 18px;
+  box-sizing: border-box;
 }
 
-.amenity-item svg {
+.amenity-item img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.amenity-item span {
+  color: var(--text);
+  font-family: 'Mulish', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.reviews-section {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 90px 0;
+}
+
+.reviews-content {
+  width: min(680px, 100%);
+}
+
+.reviews-content h2 {
+  margin: 0;
+  color: #26382f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(38px, 5vw, 58px);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.reviews-rating {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 28px;
+}
+
+.reviews-rating strong {
+  color: #26382f;
+  font-size: 58px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.reviews-rating span {
+  color: var(--muted);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.reviews-stars {
+  margin-top: 12px;
   color: var(--accent);
-  font-size: 24px;
+  font-size: 26px;
+  letter-spacing: 5px;
 }
 
-.stats-section {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  padding-bottom: 80px;
+.reviews-content > p:not(.section-kicker) {
+  max-width: 560px;
+  margin: 20px auto 28px;
+  color: #5e6b63;
+  font-size: 17px;
+  line-height: 1.7;
 }
 
-.stats-section div {
-  display: grid;
-  justify-items: center;
-  gap: 8px;
+.reviews-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: 999px;
   background: #26382f;
   color: #fff;
-  padding: 30px 16px;
-  text-align: center;
+  font-weight: 800;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
-.stats-section svg {
-  color: #d39a5c;
-  font-size: 24px;
-}
-
-.stats-section strong {
-  font-size: 34px;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 500;
-}
-
-.stats-section span {
-  color: rgba(255, 255, 255, 0.78);
+.reviews-btn:hover {
+  background: var(--accent);
+  transform: translateY(-2px);
 }
 
 .cta-section {
@@ -342,26 +395,64 @@
 }
 
 .site-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 30px clamp(24px, 6vw, 88px);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.8fr;
+  gap: 50px;
+  padding: 42px clamp(24px, 6vw, 88px);
   background: #15251d;
   color: #fff;
 }
 
-.site-footer div {
+.site-footer > div {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+}
+
+.site-footer strong {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.site-footer__brand strong {
+  font-size: 22px;
 }
 
 .site-footer span {
   color: rgba(255, 255, 255, 0.72);
+  line-height: 1.6;
+}
+
+.site-footer a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
 }
 
 .site-footer svg {
-  margin-right: 8px;
+  flex: 0 0 auto;
+  font-size: 17px;
+}
+
+.site-footer__contact {
+  align-items: flex-start;
+}
+
+.site-footer__social {
+  align-items: flex-start;
+}
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 @media (max-width: 980px) {
@@ -389,9 +480,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .stats-section {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 640px) {
@@ -400,25 +488,23 @@
   }
 
   .intro-section,
-  .stays-section,
-  .experience-section,
-  .stats-section,
-  .cta-section {
-    width: min(100% - 32px, 1180px);
-  }
+.stays-section,
+.experience-section,
+.reviews-section,
+.cta-section {
+  width: min(100% - 32px, 1180px);
+}
 
   .section-heading,
-  .cta-section,
-  .site-footer {
+  .cta-section {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .stay-grid,
-  .amenity-grid,
-  .stats-section {
-    grid-template-columns: 1fr;
-  }
+.amenity-grid {
+  grid-template-columns: 1fr;
+}
 
   .experience-image img {
     min-height: 360px;
@@ -427,4 +513,25 @@
   .cta-section {
     padding: 32px 22px;
   }
+
+  .reviews-section {
+  padding: 70px 0;
+}
+
+.reviews-content h2 {
+  font-size: 40px;
+}
+
+.reviews-rating strong {
+  font-size: 48px;
+}
+
+.reviews-stars {
+  font-size: 22px;
+}
+
+.site-footer {
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
 }

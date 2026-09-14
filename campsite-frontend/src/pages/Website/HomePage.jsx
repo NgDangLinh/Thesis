@@ -1,15 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaTiktok } from 'react-icons/fa6';
 import {
   FaCalendarAlt,
-  FaCampground,
+  FaFacebookF,
   FaFireAlt,
   FaMapMarkerAlt,
-  FaMountain,
-  FaRegStar,
-  FaShower,
-  FaTree,
-  FaUsers,
+  FaPhone,
   FaWifi,
 } from 'react-icons/fa';
 import './HomePage.css';
@@ -20,39 +17,54 @@ import glampingImage from '../../assets/Glamping.jpg';
 import rvImage from '../../assets/RV.jpg';
 import stiltHouseImage from '../../assets/SHtest.jpg';
 import serviceImage from '../../assets/Service.jpg';
-
+import airConditioningImage from '../../assets/Ac.png';
+import bbqImage from '../../assets/BBQ.png';
+import cafeImage from '../../assets/Cafe.png';
+import wifiImage from '../../assets/Wifi.png';
 const stays = [
   {
     name: 'Forest Tent Site',
-    price: 'From $29 / night',
+    price: '500,000 VND / person / night',
     image: campingImage,
     text: 'A quiet open-air pitch for guests who love simple nights, fresh air, and a real campfire mood.',
   },
   {
     name: 'Luxury Glamping Tent',
-    price: 'From $79 / night',
+    price: '1,200,000 VND / person / night',
     image: glampingImage,
     text: 'Fully prepared canvas tent with a soft bed, warm lighting, private deck, and breakfast option.',
   },
   {
     name: 'Family Stilt Lodge',
-    price: 'From $119 / night',
+    price: 'From 10,000,000 VND / night / Minimum 10 guests.',
     image: stiltHouseImage,
     text: 'A spacious shared lodge made for families, team trips, and slow evenings around the table.',
   },
   {
     name: 'Vintage Camper Van',
-    price: 'From $95 / night',
+    price: '1,500,000 VND / person / night',
     image: rvImage,
     text: 'A compact private stay with air conditioning, queen bed, and an easy walk to the lakeside.',
   },
 ];
 
 const amenities = [
-  { icon: <FaFireAlt />, label: 'BBQ & campfire' },
-  { icon: <FaWifi />, label: 'Fast wifi zones' },
-  { icon: <FaShower />, label: 'Clean showers' },
-  { icon: <FaTree />, label: 'Forest trails' },
+  {
+    image: airConditioningImage,
+    label: 'Air conditioning',
+  },
+  {
+    image: bbqImage,
+    label: 'BBQ',
+  },
+  {
+    image: cafeImage,
+    label: 'Cafe',
+  },
+  {
+    image: wifiImage,
+    label: 'WiFi',
+  },
 ];
 
 const highlights = [
@@ -174,38 +186,45 @@ const HomePage = () => {
               facilities, guests can travel light and spend more time outside.
             </p>
             <div className="amenity-grid">
-              {amenities.map((amenity) => (
-                <div className="amenity-item" key={amenity.label}>
-                  {amenity.icon}
-                  <span>{amenity.label}</span>
-                </div>
-              ))}
-            </div>
+  {amenities.map((amenity) => (
+    <div className="amenity-item" key={amenity.label}>
+      <img src={amenity.image} alt={amenity.label} />
+      <span>{amenity.label}</span>
+    </div>
+  ))}
+</div>
           </div>
         </section>
 
-        <section className="stats-section">
-          <div>
-            <FaCampground />
-            <strong>36</strong>
-            <span>bookable stays</span>
-          </div>
-          <div>
-            <FaMountain />
-            <strong>12 km</strong>
-            <span>forest trails</span>
-          </div>
-          <div>
-            <FaUsers />
-            <strong>180+</strong>
-            <span>weekend capacity</span>
-          </div>
-          <div>
-            <FaRegStar />
-            <strong>4.8</strong>
-            <span>guest rating</span>
-          </div>
-        </section>
+        <section className="reviews-section">
+  <div className="reviews-content">
+    <p className="section-kicker">Guest reviews</p>
+
+    <h2>What our guests say</h2>
+
+    <div className="reviews-rating">
+      <strong>4.8</strong>
+      <span>/ 5</span>
+    </div>
+
+    <div className="reviews-stars">
+      ★★★★★
+    </div>
+
+    <p>
+      Discover what our guests have shared about their stay at Mojen Retreat.
+    </p>
+
+    <a
+      className="reviews-btn"
+      href="https://maps.app.goo.gl/WfMehYXkZx3SDijt5"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Read our reviews on Google
+    </a>
+  </div>
+</section>
 
         <section className="cta-section">
           <div>
@@ -224,17 +243,55 @@ const HomePage = () => {
       </main>
 
       <footer className="site-footer">
-        <div>
-          <strong>Mojen Camp</strong>
-          <span>Forest retreat and campsite booking</span>
-        </div>
-        <div>
-          <span>
-            <FaMapMarkerAlt /> Quan Chu, Thai Nguyen
-          </span>
-          <span>hello@mojencamp.com</span>
-        </div>
-      </footer>
+  <div className="site-footer__brand">
+    <strong>Mojen Camp</strong>
+    <span>Forest retreat and campsite booking</span>
+  </div>
+
+  <div className="site-footer__contact">
+    <strong>Contact</strong>
+
+    <a href="tel:+84981588219">
+      <FaPhone />
+      <span>+84 981 588 219</span>
+    </a>
+
+    <a
+      href="https://maps.app.goo.gl/WfMehYXkZx3SDijt5"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <FaMapMarkerAlt />
+      <span>Quan Chu, Thai Nguyen</span>
+    </a>
+  </div>
+
+  <div className="site-footer__social">
+    <strong>Follow us</strong>
+
+    <div className="social-links">
+      <a
+        href="https://www.facebook.com/mojenretreat"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Facebook"
+      >
+        <FaFacebookF />
+        <span>Facebook</span>
+      </a>
+
+      <a
+        href="https://www.tiktok.com/@mojenretreat"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="TikTok"
+      >
+        <FaTiktok />
+        <span>TikTok</span>
+      </a>
+    </div>
+  </div>
+</footer>
     </div>
   );
 };

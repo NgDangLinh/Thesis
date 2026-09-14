@@ -5,28 +5,28 @@ const siteData = {
   Camping: [
     {
       id: 'C1',
-      area: 'Rừng thông',
+      area: 'Pine forest',
       type: 'Tent Site',
       capacity: 2,
       price: 290000,
     },
     {
       id: 'C2',
-      area: 'Rừng thông',
+      area: 'Pine forest',
       type: 'Tent Site',
       capacity: 2,
       price: 290000,
     },
     {
       id: 'C3',
-      area: 'Ven hồ',
+      area: 'Lakeside',
       type: 'Tent Site',
       capacity: 2,
       price: 320000,
     },
     {
       id: 'C4',
-      area: 'Ven hồ',
+      area: 'Lakeside',
       type: 'Tent Site',
       capacity: 4,
       price: 350000,
@@ -36,21 +36,21 @@ const siteData = {
   Glamping: [
     {
       id: 'G1',
-      area: 'Ven suối',
+      area: 'Streamside',
       type: 'Glamping Tent',
       capacity: 2,
       price: 790000,
     },
     {
       id: 'G2',
-      area: 'Ven suối',
+      area: 'Streamside',
       type: 'Glamping Tent',
       capacity: 2,
       price: 790000,
     },
     {
       id: 'G3',
-      area: 'Rừng thông',
+      area: 'Pine forest',
       type: 'Glamping Tent',
       capacity: 4,
       price: 950000,
@@ -60,14 +60,14 @@ const siteData = {
   Lodge: [
     {
       id: 'L1',
-      area: 'Khu vườn',
+      area: 'Garden area',
       type: 'Family Lodge',
       capacity: 8,
       price: 1190000,
     },
     {
       id: 'L2',
-      area: 'Khu vườn',
+      area: 'Garden area',
       type: 'Family Lodge',
       capacity: 8,
       price: 1190000,
@@ -77,20 +77,21 @@ const siteData = {
   RV: [
     {
       id: 'RV1',
-      area: 'Ven hồ',
+      area: 'Lakeside',
       type: 'Camper Van',
       capacity: 2,
       price: 950000,
     },
     {
       id: 'RV2',
-      area: 'Ven hồ',
+      area: 'Lakeside',
       type: 'Camper Van',
       capacity: 2,
       price: 950000,
     },
   ],
 };
+
 const ReservationModal = ({ room, onClose }) => {
   const [selectedSite, setSelectedSite] = useState(null);
   const [fullName, setFullName] = useState('');
@@ -99,24 +100,21 @@ const ReservationModal = ({ room, onClose }) => {
 
   const sites = siteData[room.type] || [];
 
-  // Dữ liệu demo các lô trại
-  
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!selectedSite) {
-      alert('Vui lòng chọn một lô trại.');
+      alert('Please select a campsite.');
       return;
     }
 
     if (!fullName.trim()) {
-      alert('Vui lòng nhập họ và tên.');
+      alert('Please enter your full name.');
       return;
     }
 
     if (!phone.trim()) {
-      alert('Vui lòng nhập số điện thoại.');
+      alert('Please enter your phone number.');
       return;
     }
 
@@ -132,7 +130,7 @@ const ReservationModal = ({ room, onClose }) => {
 
     console.log('Booking information:', bookingData);
 
-    alert('Yêu cầu đặt chỗ đã được gửi!');
+    alert('Your reservation request has been submitted!');
 
     onClose();
   };
@@ -154,7 +152,7 @@ const ReservationModal = ({ room, onClose }) => {
             <h2>{room.name}</h2>
 
             <p className="reservation-description">
-              Chọn lô trại phù hợp và điền thông tin của bạn.
+              Select a suitable campsite and enter your details.
             </p>
           </div>
 
@@ -162,7 +160,7 @@ const ReservationModal = ({ room, onClose }) => {
             className="reservation-close"
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label="Close reservation"
           >
             ×
           </button>
@@ -171,7 +169,7 @@ const ReservationModal = ({ room, onClose }) => {
         <form onSubmit={handleSubmit}>
           <section className="reservation-section">
             <div className="reservation-section-title">
-              <h3>Chọn lô trại còn trống</h3>
+              <h3>Available campsites</h3>
               <span>({sites.length})</span>
             </div>
 
@@ -194,12 +192,12 @@ const ReservationModal = ({ room, onClose }) => {
                       </strong>
 
                       <span>
-                        {site.type} · tối đa {site.capacity} khách · 1 đêm
+                        {site.type} · up to {site.capacity} guests · 1 night
                       </span>
                     </div>
 
                     <strong className="reservation-site-price">
-                      {site.price.toLocaleString()}đ
+                      {site.price.toLocaleString()} VND
                     </strong>
                   </button>
                 );
@@ -209,23 +207,23 @@ const ReservationModal = ({ room, onClose }) => {
 
           <section className="reservation-section">
             <h3 className="reservation-customer-title">
-              Thông tin khách hàng
+              Guest information
             </h3>
 
             <div className="reservation-form-grid">
               <label>
-                <span>Họ và tên</span>
+                <span>Full name</span>
 
                 <input
                   type="text"
-                  placeholder="Nguyễn Văn A"
+                  placeholder="Nguyen Van A"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                 />
               </label>
 
               <label>
-                <span>Số điện thoại</span>
+                <span>Phone number</span>
 
                 <input
                   type="tel"
@@ -236,11 +234,11 @@ const ReservationModal = ({ room, onClose }) => {
               </label>
 
               <label className="reservation-email">
-                <span>Email (không bắt buộc)</span>
+                <span>Email (optional)</span>
 
                 <input
                   type="email"
-                  placeholder="ban@email.com"
+                  placeholder="you@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -255,13 +253,13 @@ const ReservationModal = ({ room, onClose }) => {
               </span>
 
               <strong>
-                {selectedSite.price.toLocaleString()}đ / đêm
+                {selectedSite.price.toLocaleString()} VND / night
               </strong>
             </div>
           )}
 
           <button className="reservation-submit" type="submit">
-            Gửi yêu cầu đặt chỗ
+            Submit reservation
           </button>
         </form>
       </div>

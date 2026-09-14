@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import heroImage from '../assets/HomePageCamping.jpg';
+import { Link } from 'react-router-dom';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -34,6 +35,9 @@ export default function Login() {
 
         <div className="login-card">
           <div className="login-card-header">
+            <Link to="/" className="back-home">
+  ← Back to Home
+</Link>
             <p className="login-kicker">ADMIN PORTAL</p>
             <h1>Welcome back</h1>
             <span>Sign in to manage your campsite.</span>
