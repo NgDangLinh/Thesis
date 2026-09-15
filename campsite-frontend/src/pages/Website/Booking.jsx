@@ -66,9 +66,9 @@ const stayData = [
     'Air conditioning',
   ],
   policies: ['Pets allowed'],
-  capacity: 8,
-  price: 10000000,
-  priceNote: 'per night / minimum 10 guests',
+  capacity: '10+',
+  price: 0,
+  priceNote: 'Contact us for group pricing',
 },
 {
   name: 'Vintage Camper Van',

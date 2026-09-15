@@ -20,12 +20,21 @@ const RoomCard = ({ room, onReserve }) => {
           </div>
 
           <div className="room-card__price">
-  <span>
-    {room.pricePrefix ? `${room.pricePrefix} ` : ''}
-    {room.price.toLocaleString()} VND
-  </span>
+  {room.type === 'Lodge' ? (
+    <>
+      <span>Price available upon request</span>
+      <small>Contact us for group pricing</small>
+    </>
+  ) : (
+    <>
+      <span>
+        {room.pricePrefix ? `${room.pricePrefix} ` : ''}
+        {room.price.toLocaleString()} VND
+      </span>
 
-  <small>{room.priceNote || 'per night'}</small>
+      <small>{room.priceNote || 'per night'}</small>
+    </>
+  )}
 </div>
         </div>
 
@@ -93,13 +102,22 @@ const RoomCard = ({ room, onReserve }) => {
           </div>
 
           <button
-            className="book-btn"
-            disabled={room.remaining === 0}
-            type="button"
-            onClick={() => onReserve(room)}
-          >
-            Reserve
-          </button>
+  className="book-btn"
+  disabled={room.type !== 'Lodge' && room.remaining === 0}
+  type="button"
+  onClick={() => {
+    if (room.type === 'Lodge') {
+      alert(
+        'For Lodge reservations, please contact us to discuss availability and pricing.'
+      );
+      return;
+    }
+
+    onReserve(room);
+  }}
+>
+  {room.type === 'Lodge' ? 'Contact us' : 'Reserve'}
+</button>
         </div>
       </div>
     </article>

@@ -19,72 +19,97 @@ const ReservationModal = ({
   const sites = availableSites;
 
   const formatDate = (dateString) => {
-  if (!dateString) {
-    return '-';
-  }
+    if (!dateString) {
+      return '-';
+    }
 
-  const [year, month, day] = dateString.split('-');
+    const [year, month, day] = dateString.split('-');
 
-  return `${day}/${month}/${year}`;
-};
+    return `${day}/${month}/${year}`;
+  };
+
+  const getNights = () => {
+    if (!checkIn || !checkOut) {
+      return 0;
+    }
+
+    const start = new Date(`${checkIn}T00:00:00`);
+    const end = new Date(`${checkOut}T00:00:00`);
+
+    return Math.round(
+      (end - start) / (1000 * 60 * 60 * 24)
+    );
+  };
+
+  const nights = getNights();
+
+  const guestCount =
+  guests === '4+ guests'
+    ? 4
+    : Number.parseInt(guests, 10);
+
+const totalAmount =
+  selectedSite && nights > 0
+    ? selectedSite.price * guestCount * nights
+    : 0;
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!fullName.trim()) {
-    alert('Please enter your full name.');
-    return;
-  }
-
-  if (!phone.trim()) {
-    alert('Please enter your phone number.');
-    return;
-  }
-
-  if (!selectedSite) {
-    alert('Please select a site.');
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      'http://localhost:5000/api/bookings',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName: fullName.trim(),
-          phone: phone.trim(),
-          siteId: selectedSite.id,
-          checkIn,
-          checkOut,
-          guests:
-            guests === '4+ guests'
-              ? 4
-              : Number.parseInt(guests, 10),
-        }),
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      alert(result.message || 'Failed to create reservation.');
+    if (!fullName.trim()) {
+      alert('Please enter your full name.');
       return;
     }
 
-    console.log('Booking created:', result.data);
+    if (!phone.trim()) {
+      alert('Please enter your phone number.');
+      return;
+    }
 
-    alert('Your reservation has been submitted successfully.');
+    if (!selectedSite) {
+      alert('Please select a site.');
+      return;
+    }
 
-    onClose();
-  } catch (error) {
-    console.error('Reservation error:', error);
-    alert('Cannot connect to server.');
-  }
-};
+    try {
+      const response = await fetch(
+        'http://localhost:5000/api/bookings',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fullName: fullName.trim(),
+            phone: phone.trim(),
+            siteId: selectedSite.id,
+            checkIn,
+            checkOut,
+            guests:
+              guests === '4+ guests'
+                ? 4
+                : Number.parseInt(guests, 10),
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(result.message || 'Failed to create reservation.');
+        return;
+      }
+
+      console.log('Booking created:', result.data);
+
+      alert('Your reservation has been submitted successfully.');
+
+      onClose();
+    } catch (error) {
+      console.error('Reservation error:', error);
+      alert('Cannot connect to server.');
+    }
+  };
 
 
   if (!room) {
@@ -106,19 +131,19 @@ const ReservationModal = ({
             <p className="reservation-description">
               Select a suitable campsite and enter your details.
             </p>
-<div className="reservation-dates">
-  <span>
-    <strong>Check-in:</strong> {formatDate(checkIn)}
-  </span>
+            <div className="reservation-dates">
+              <span>
+                <strong>Check-in:</strong> {formatDate(checkIn)}
+              </span>
 
-  <span>
-    <strong>Check-out:</strong> {formatDate(checkOut)}
-  </span>
+              <span>
+                <strong>Check-out:</strong> {formatDate(checkOut)}
+              </span>
 
-  <span>
-    <strong>Guests:</strong> {guests}
-  </span>
-</div>
+              <span>
+                <strong>Guests:</strong> {guests}
+              </span>
+            </div>
           </div>
 
           <button
@@ -146,24 +171,29 @@ const ReservationModal = ({
                   <button
                     key={site.id}
                     type="button"
-                    className={`reservation-site ${
-                      isSelected ? 'selected' : ''
-                    }`}
+                    className={`reservation-site ${isSelected ? 'selected' : ''
+                      }`}
                     onClick={() => setSelectedSite(site)}
                   >
                     <div className="reservation-site-info">
                       <strong>
-                        {site.id} · {site.area}
+                        {site.id} — {site.category} Site
                       </strong>
 
                       <span>
-                        {site.type} · up to {site.capacity} guests · 1 night
+                        {site.category === 'Camping'
+                          ? 'Tent'
+                          : site.category === 'Glamping'
+                            ? 'Glamping Tent'
+                            : site.type}
+                        {' · '}
+                        up to {site.capacity} guests · {nights} {nights === 1 ? 'night' : 'nights'}
                       </span>
                     </div>
 
                     <strong className="reservation-site-price">
-                      {site.price.toLocaleString()} VND
-                    </strong>
+  {site.price.toLocaleString()} VND / person / night
+</strong>
                   </button>
                 );
               })}
@@ -212,16 +242,23 @@ const ReservationModal = ({
           </section>
 
           {selectedSite && (
-            <div className="reservation-summary">
-              <span>
-                {selectedSite.id} · {selectedSite.area}
-              </span>
+  <div className="reservation-summary">
+    <span>
+      {selectedSite.id} — {selectedSite.category} Site
+    </span>
 
-              <strong>
-                {selectedSite.price.toLocaleString()} VND / night
-              </strong>
-            </div>
-          )}
+    <div>
+      <span>
+        {selectedSite.price.toLocaleString()} VND × {guestCount}{' '}
+        guests × {nights} {nights === 1 ? 'night' : 'nights'}
+      </span>
+
+      <strong>
+        Total: {totalAmount.toLocaleString()} VND
+      </strong>
+    </div>
+  </div>
+)}
 
           <button className="reservation-submit" type="submit">
             Submit reservation

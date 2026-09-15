@@ -109,14 +109,32 @@ const createBooking = async (req, res) => {
     }
 
     // 5. Check capacity
-    if (guestCount > site.capacity) {
-      await connection.rollback();
+    if (site.category === 'Lodge' && guestCount < 10) {
+  await connection.rollback();
 
-      return res.status(400).json({
-        status: 'ERROR',
-        message: `This site can accommodate up to ${site.capacity} guests`,
-      });
-    }
+  return res.status(400).json({
+    status: 'ERROR',
+    message: 'Lodge requires a minimum of 10 guests',
+  });
+}
+
+if (site.category === 'Lodge' && guestCount < 10) {
+  await connection.rollback();
+
+  return res.status(400).json({
+    status: 'ERROR',
+    message: 'Lodge requires a minimum of 10 guests',
+  });
+}
+
+if (guestCount > site.capacity) {
+  await connection.rollback();
+
+  return res.status(400).json({
+    status: 'ERROR',
+    message: `This site can accommodate up to ${site.capacity} guests`,
+  });
+}
 
     // 6. Check date conflict
     const [conflictingBookings] = await connection.query(
@@ -159,9 +177,12 @@ const createBooking = async (req, res) => {
     }
 
     // 8. Calculate total amount
-    const pricePerNight = Number(site.price_per_night);
+   const pricePerNight = Number(site.price_per_night);
 
-    const totalAmount = pricePerNight * nights;
+const totalAmount =
+  site.category === 'Lodge'
+    ? pricePerNight * nights
+    : pricePerNight * guestCount * nights;
 
     // 9. Find existing customer by phone
     const [customerRows] = await connection.query(
@@ -518,14 +539,23 @@ const updateBooking = async (req, res) => {
     }
 
     // 7. Check capacity
-    if (guestCount > site.capacity) {
-      await connection.rollback();
+    if (site.category === 'Lodge' && guestCount < 10) {
+  await connection.rollback();
 
-      return res.status(400).json({
-        status: 'ERROR',
-        message: `This site can accommodate up to ${site.capacity} guests`,
-      });
-    }
+  return res.status(400).json({
+    status: 'ERROR',
+    message: 'Lodge requires a minimum of 10 guests',
+  });
+}
+
+if (guestCount > site.capacity) {
+  await connection.rollback();
+
+  return res.status(400).json({
+    status: 'ERROR',
+    message: `This site can accommodate up to ${site.capacity} guests`,
+  });
+}
 
     // 8. Check date conflict
     if (status !== 'cancelled') {
@@ -578,11 +608,13 @@ const updateBooking = async (req, res) => {
     }
 
     // 10. Calculate total amount
-    const pricePerNight =
-      Number(site.price_per_night);
+   const pricePerNight =
+  Number(site.price_per_night);
 
-    const totalAmount =
-      pricePerNight * nights;
+const totalAmount =
+  site.category === 'Lodge'
+    ? pricePerNight * nights
+    : pricePerNight * guestCount * nights;
 
     // 11. Update customer
     await connection.query(
