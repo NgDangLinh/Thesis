@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import './Overview.css';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 export default function Overview() {
  const [bookings, setBookings] = useState([]);
 const [sites, setSites] = useState([]);

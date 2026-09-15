@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './PaymentPage.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const PaymentPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ const PaymentPage = () => {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/payments',
+        `${API_BASE_URL}/payments`,
         {
           method: 'POST',
           headers: {

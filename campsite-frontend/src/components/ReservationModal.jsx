@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './ReservationModal.css';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const ReservationModal = ({
   room,
@@ -75,7 +76,7 @@ const totalAmount =
   try {
     // Step 1: Create booking
     const bookingResponse = await fetch(
-      'http://localhost:5000/api/bookings',
+      `${API_BASE_URL}/bookings`,
       {
         method: 'POST',
         headers: {
@@ -109,7 +110,7 @@ const totalAmount =
 
     // Step 2: Create payment
     const paymentResponse = await fetch(
-      'http://localhost:5000/api/payments',
+      `${API_BASE_URL}/payments`,
       {
         method: 'POST',
         headers: {
