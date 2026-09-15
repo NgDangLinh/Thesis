@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './ReservationModal.css';
-
+import { useNavigate } from 'react-router-dom';
 
 
 const ReservationModal = ({
@@ -11,6 +11,7 @@ const ReservationModal = ({
   availableSites = [],
   onClose,
 }) => {
+  const navigate = useNavigate();
   const [selectedSite, setSelectedSite] = useState(null);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -54,62 +55,95 @@ const totalAmount =
     : 0;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!fullName.trim()) {
-      alert('Please enter your full name.');
-      return;
-    }
+  if (!fullName.trim()) {
+    alert('Please enter your full name.');
+    return;
+  }
 
-    if (!phone.trim()) {
-      alert('Please enter your phone number.');
-      return;
-    }
+  if (!phone.trim()) {
+    alert('Please enter your phone number.');
+    return;
+  }
 
-    if (!selectedSite) {
-      alert('Please select a site.');
-      return;
-    }
+  if (!selectedSite) {
+    alert('Please select a site.');
+    return;
+  }
 
-    try {
-      const response = await fetch(
-        'http://localhost:5000/api/bookings',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            fullName: fullName.trim(),
-            phone: phone.trim(),
-            siteId: selectedSite.id,
-            checkIn,
-            checkOut,
-            guests:
-              guests === '4+ guests'
-                ? 4
-                : Number.parseInt(guests, 10),
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        alert(result.message || 'Failed to create reservation.');
-        return;
+  try {
+    // Step 1: Create booking
+    const bookingResponse = await fetch(
+      'http://localhost:5000/api/bookings',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          phone: phone.trim(),
+          siteId: selectedSite.id,
+          checkIn,
+          checkOut,
+          guests:
+            guests === '4+ guests'
+              ? 4
+              : Number.parseInt(guests, 10),
+        }),
       }
+    );
 
-      console.log('Booking created:', result.data);
+    const bookingResult = await bookingResponse.json();
 
-      alert('Your reservation has been submitted successfully.');
-
-      onClose();
-    } catch (error) {
-      console.error('Reservation error:', error);
-      alert('Cannot connect to server.');
+    if (!bookingResponse.ok) {
+      alert(
+        bookingResult.message ||
+          'Failed to create reservation.'
+      );
+      return;
     }
-  };
+
+    const booking = bookingResult.data;
+
+    // Step 2: Create payment
+    const paymentResponse = await fetch(
+      'http://localhost:5000/api/payments',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookingId: booking.id,
+        }),
+      }
+    );
+
+    const paymentResult = await paymentResponse.json();
+
+    if (!paymentResponse.ok) {
+      alert(
+        paymentResult.message ||
+          'Failed to create payment.'
+      );
+      return;
+    }
+
+    // Step 3: Go to payment page
+    onClose();
+
+    navigate('/payment', {
+      state: {
+        payment: paymentResult.data,
+      },
+    });
+  } catch (error) {
+    console.error('Reservation error:', error);
+    alert('Cannot connect to server.');
+  }
+};
 
 
   if (!room) {

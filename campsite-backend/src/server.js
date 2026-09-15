@@ -7,6 +7,7 @@ const sitesRoutes = require('./routes/sitesRoutes');
 const customersRoutes = require('./routes/customersRoutes');
 const bookingsRoutes = require('./routes/bookingsRoutes');
 const authRoutes = require('./routes/authRoutes');
+const paymentsRoutes = require('./routes/paymentsRoutes');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/sites', sitesRoutes);
 app.use('/api/customers', customersRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/payments', paymentsRoutes);
 // =========================
 // TEST ROUTE
 // =========================

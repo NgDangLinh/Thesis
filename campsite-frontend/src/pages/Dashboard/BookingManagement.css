@@ -233,12 +233,13 @@
   display: grid;
 
   grid-template-columns:
-    minmax(240px, 1.5fr)
-    minmax(120px, 0.8fr)
-    minmax(180px, 1fr)
-    minmax(100px, 0.7fr)
-    minmax(150px, 0.9fr)
-    70px;
+  minmax(240px, 1.5fr)
+  minmax(120px, 0.8fr)
+  minmax(180px, 1fr)
+  minmax(100px, 0.7fr)
+  minmax(150px, 0.9fr)
+  minmax(100px, 0.7fr)
+  70px;
 
   align-items: center;
 
@@ -265,12 +266,13 @@
   display: grid;
 
   grid-template-columns:
-    minmax(240px, 1.5fr)
-    minmax(120px, 0.8fr)
-    minmax(180px, 1fr)
-    minmax(100px, 0.7fr)
-    minmax(150px, 0.9fr)
-    70px;
+  minmax(240px, 1.5fr)
+  minmax(120px, 0.8fr)
+  minmax(180px, 1fr)
+  minmax(100px, 0.7fr)
+  minmax(150px, 0.9fr)
+  minmax(100px, 0.7fr)
+  70px;
 
   align-items: center;
 

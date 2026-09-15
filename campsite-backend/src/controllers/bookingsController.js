@@ -227,7 +227,7 @@ const totalAmount =
     }
 
     // 11. Create booking
-    const [bookingResult] = await connection.query(
+        const [bookingResult] = await connection.query(
       `INSERT INTO bookings
         (
           customer_id,
@@ -238,13 +238,33 @@ const totalAmount =
           status,
           total_amount
         )
-       VALUES (?, ?, ?, ?, ?, 'booked', ?)`,
+        VALUES (?, ?, ?, ?, ?, 'booked', ?)`,
       [
         customerId,
         siteId,
         checkIn,
         checkOut,
         guestCount,
+        totalAmount,
+      ]
+    );
+
+    // 12. Create payment
+    const bookingId = bookingResult.insertId;
+    const paymentCode = `MOJEN-${bookingId}`;
+
+    await connection.query(
+      `INSERT INTO payments
+        (
+          booking_id,
+          payment_code,
+          amount,
+          status
+        )
+        VALUES (?, ?, ?, 'pending')`,
+      [
+        bookingId,
+        paymentCode,
         totalAmount,
       ]
     );
@@ -285,37 +305,45 @@ const totalAmount =
 const getBookings = async (req, res) => {
   try {
     const [rows] = await db.query(
-      `SELECT
-        b.id,
-        b.customer_id,
-        c.full_name AS customer_name,
-        c.phone,
-        c.email,
+  `SELECT
+    b.id,
+    b.customer_id,
+    c.full_name AS customer_name,
+    c.phone,
+    c.email,
 
-        b.site_id,
-        s.category,
-        s.area,
-        s.type,
+    b.site_id,
+    s.category,
+    s.area,
+    s.type,
 
-        b.check_in,
-        b.check_out,
-        b.guests,
-        b.status,
-        b.total_amount,
+    b.check_in,
+    b.check_out,
+    b.guests,
+    b.status,
+    b.total_amount,
 
-        b.created_at,
-        b.updated_at
+    p.payment_code,
+    p.status AS payment_status,
+    p.transaction_id,
+    p.paid_at,
 
-       FROM bookings b
+    b.created_at,
+    b.updated_at
 
-       INNER JOIN customers c
-         ON b.customer_id = c.id
+   FROM bookings b
 
-       INNER JOIN sites s
-         ON b.site_id = s.id
+   INNER JOIN customers c
+     ON b.customer_id = c.id
 
-       ORDER BY b.id DESC`
-    );
+   INNER JOIN sites s
+     ON b.site_id = s.id
+
+   LEFT JOIN payments p
+     ON p.booking_id = b.id
+
+   ORDER BY b.id DESC`
+);
 
     res.json({
       status: 'OK',

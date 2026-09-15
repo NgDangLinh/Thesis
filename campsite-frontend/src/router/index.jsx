@@ -8,6 +8,8 @@ import SiteMap from '../pages/Dashboard/SiteMap';
 import BookingManagement from '../pages/Dashboard/BookingManagement';
 import UserManagement from '../pages/Dashboard/UserManagement';
 import Revenue from '../pages/Dashboard/Revenue';
+import PaymentPage from '../pages/Website/PaymentPage';
+import PaymentResultPage from '../pages/Website/PaymentResultPage';
 
 export default function Router() {
   return useRoutes([
@@ -27,6 +29,13 @@ export default function Router() {
       path: '/booking',
       element: <Booking />,
     },
+    {
+      path: '/payment',
+      element: <PaymentPage />
+    },
+    { path: '/payment/success', element: <PaymentResultPage /> },
+    { path: '/payment/error', element: <PaymentResultPage /> },
+    { path: '/payment/cancel', element: <PaymentResultPage /> },
     {
       path: '/admin',
       element: <DashboardLayout />,
