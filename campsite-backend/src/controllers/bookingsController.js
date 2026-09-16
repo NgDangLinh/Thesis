@@ -179,10 +179,12 @@ if (guestCount > site.capacity) {
     // 8. Calculate total amount
    const pricePerNight = Number(site.price_per_night);
 
-const totalAmount =
+ /*const totalAmount =
   site.category === 'Lodge'
     ? pricePerNight * nights
-    : pricePerNight * guestCount * nights;
+    : pricePerNight * guestCount * nights; */
+
+    const totalAmount = 5000;
 
     // 9. Find existing customer by phone
     const [customerRows] = await connection.query(
