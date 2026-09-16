@@ -188,7 +188,7 @@ const getAvailableSites = async (category) => {
     });
 
     const response = await fetch(
-      `http://localhost:5000/api/sites/availability?${params.toString()}`
+      `${import.meta.env.VITE_API_URL}/sites/availability?${params.toString()}`
     );
 
     const result = await response.json();
