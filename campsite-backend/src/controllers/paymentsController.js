@@ -67,9 +67,9 @@ const createPayment = async (req, res) => {
   const payment = createPaymentFields({
     bookingId: booking.id,
     amount: Number(existingPayment.amount),
-    successUrl: 'http://localhost:5173/payment/success',
-    errorUrl: 'http://localhost:5173/payment/error',
-    cancelUrl: 'http://localhost:5173/payment/cancel',
+    successUrl: 'https://mojen-retreat.n1.tinhgon.xyz/payment/success',
+errorUrl: 'https://mojen-retreat.n1.tinhgon.xyz/payment/error',
+cancelUrl: 'https://mojen-retreat.n1.tinhgon.xyz/payment/cancel',
   });
 
   return res.json({
@@ -99,9 +99,9 @@ const createPayment = async (req, res) => {
     const payment = createPaymentFields({
       bookingId: booking.id,
       amount,
-      successUrl: 'http://localhost:5173/payment/success',
-      errorUrl: 'http://localhost:5173/payment/error',
-      cancelUrl: 'http://localhost:5173/payment/cancel',
+      successUrl: 'https://mojen-retreat.n1.tinhgon.xyz/payment/success',
+errorUrl: 'https://mojen-retreat.n1.tinhgon.xyz/payment/error',
+cancelUrl: 'https://mojen-retreat.n1.tinhgon.xyz/payment/cancel',
     });
 
     return res.status(201).json({
